@@ -1,0 +1,167 @@
+<div class="new-sale">
+
+  <!-- ── Barra de progreso ──────────────────────────────────────────────── -->
+  <div class="steps-bar">
+    <div class="step-item" [class.active]="step() >= 1" [class.done]="step() > 1">
+      <span class="step-num">1</span>
+      <span class="step-label">Producto</span>
+    </div>
+    <div class="step-line" [class.done]="step() > 1"></div>
+    <div class="step-item" [class.active]="step() >= 2" [class.done]="step() > 2">
+      <span class="step-num">2</span>
+      <span class="step-label">Cantidad</span>
+    </div>
+    <div class="step-line" [class.done]="step() > 2"></div>
+    <div class="step-item" [class.active]="step() >= 3">
+      <span class="step-num">3</span>
+      <span class="step-label">Confirmar</span>
+    </div>
+  </div>
+
+  <!-- ── Paso 1: Selección de producto ────────────────────────────────── -->
+  @if (step() === 1) {
+    <h2 class="step-title">Toca el plato que se va a cobrar</h2>
+
+    @for (cat of categories(); track cat) {
+      <h3 class="category-title">{{ cat }}</h3>
+      <div class="product-grid">
+        @for (product of productsByCategory()[cat]; track product.id) {
+          <div
+            class="product-card"
+            [class.selected]="selectedProduct()?.id === product.id"
+            (click)="selectProduct(product)">
+            @if (selectedProduct()?.id === product.id) {
+              <i class="pi pi-check check-icon"></i>
+            }
+            <div class="product-name">{{ product.name }}</div>
+            <div class="product-price">S/ {{ product.price }}</div>
+          </div>
+        }
+      </div>
+    }
+
+    @if (selectedProduct()) {
+      <div class="step-actions">
+        <p-button
+          label="Continuar"
+          icon="pi pi-arrow-right"
+          iconPos="right"
+          (onClick)="step.set(2)" />
+      </div>
+    }
+  }
+
+  <!-- ── Paso 2: Cantidad y método de pago ─────────────────────────────── -->
+  @if (step() === 2) {
+    <div class="selected-summary">
+      <span class="sp-name">{{ selectedProduct()?.name }}</span>
+      <span class="sp-price">S/ {{ selectedProduct()?.price | number:'1.2-2' }} c/u</span>
+    </div>
+
+    <div class="quantity-section">
+      <h3 class="section-label">Cantidad</h3>
+      <div class="quantity-control">
+        <p-button
+          icon="pi pi-minus"
+          [outlined]="true"
+          severity="secondary"
+          (onClick)="decreaseQty()"
+          [disabled]="quantity() <= 1" />
+        <span class="qty-value">{{ quantity() }}</span>
+        <p-button
+          icon="pi pi-plus"
+          [outlined]="true"
+          severity="secondary"
+          (onClick)="increaseQty()" />
+      </div>
+      <div class="qty-subtotal">Subtotal: <strong>S/ {{ total() | number:'1.2-2' }}</strong></div>
+    </div>
+
+    <div class="payment-section">
+      <h3 class="section-label">¿Cómo va a pagar?</h3>
+      <div class="payment-buttons">
+        <button
+          class="pay-btn efectivo"
+          [class.selected]="paymentMethod() === 'efectivo'"
+          (click)="selectPayment('efectivo')">
+          <i class="pi pi-wallet"></i>
+          Efectivo
+        </button>
+        <button
+          class="pay-btn yape"
+          [class.selected]="paymentMethod() === 'yape'"
+          (click)="selectPayment('yape')">
+          <i class="pi pi-mobile"></i>
+          Yape
+        </button>
+        <button
+          class="pay-btn plin"
+          [class.selected]="paymentMethod() === 'plin'"
+          (click)="selectPayment('plin')">
+          <i class="pi pi-send"></i>
+          Plin
+        </button>
+      </div>
+    </div>
+
+    @if (paymentMethod()) {
+      <div class="step-actions">
+        <p-button
+          label="Ver resumen"
+          icon="pi pi-arrow-right"
+          iconPos="right"
+          (onClick)="step.set(3)" />
+      </div>
+    }
+  }
+
+  <!-- ── Paso 3: Confirmación ──────────────────────────────────────────── -->
+  @if (step() === 3) {
+    <div class="confirmation-card">
+      <h2 class="confirm-title">Resumen de la venta</h2>
+
+      <div class="confirm-rows">
+        <div class="confirm-row">
+          <span class="confirm-label">Producto</span>
+          <span class="confirm-value">{{ selectedProduct()?.name }}</span>
+        </div>
+        <div class="confirm-row">
+          <span class="confirm-label">Cantidad</span>
+          <span class="confirm-value">{{ quantity() }}</span>
+        </div>
+        <div class="confirm-row">
+          <span class="confirm-label">Precio unitario</span>
+          <span class="confirm-value">S/ {{ selectedProduct()?.price | number:'1.2-2' }}</span>
+        </div>
+        <div class="confirm-row">
+          <span class="confirm-label">Método de pago</span>
+          <span class="confirm-value">
+            <span class="payment-badge {{ paymentMethod() }}">{{ paymentLabel(paymentMethod()) }}</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="confirm-total">
+        <span>TOTAL</span>
+        <span class="total-amount">S/ {{ total() | number:'1.2-2' }}</span>
+      </div>
+
+      <div class="confirm-actions">
+        <p-button
+          label="Confirmar y registrar"
+          icon="pi pi-check"
+          [loading]="saving()"
+          [disabled]="saving()"
+          (onClick)="confirmSale()" />
+        <p-button
+          label="Corregir"
+          icon="pi pi-arrow-left"
+          [outlined]="true"
+          severity="secondary"
+          [disabled]="saving()"
+          (onClick)="step.set(2)" />
+      </div>
+    </div>
+  }
+
+</div>

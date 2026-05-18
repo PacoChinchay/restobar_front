@@ -1,0 +1,326 @@
+.new-sale {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 960px;
+}
+
+// ── Steps bar ─────────────────────────────────────────────────────────────
+.steps-bar {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 4px;
+
+  .step-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+
+    .step-num {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #e5e7eb;
+      color: #9ca3af;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .step-label {
+      font-size: 11px;
+      color: #9ca3af;
+      white-space: nowrap;
+    }
+
+    &.active .step-num {
+      background: var(--brand-primary);
+      color: #fff;
+    }
+    &.active .step-label { color: var(--brand-primary); font-weight: 600; }
+
+    &.done .step-num {
+      background: #d1fae5;
+      color: #065f46;
+    }
+  }
+
+  .step-line {
+    flex: 1;
+    height: 2px;
+    background: #e5e7eb;
+    margin-bottom: 16px;
+    transition: background 0.2s;
+
+    &.done { background: var(--brand-primary); }
+  }
+}
+
+.step-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+// ── Product grid ──────────────────────────────────────────────────────────
+.category-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+
+  @media (max-width: 900px) { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 768px) { grid-template-columns: repeat(2, 1fr); }
+}
+
+.product-card {
+  position: relative;
+  border: 2px solid #e5e7eb;
+  border-radius: var(--radius);
+  padding: 14px 12px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  text-align: center;
+
+  &:hover { border-color: #d1d5db; background: #f9fafb; }
+  &:active { transform: scale(0.97); }
+
+  &.selected {
+    border-color: var(--brand-primary);
+    background: var(--brand-primary-bg);
+  }
+
+  .check-icon {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    color: var(--brand-primary);
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .product-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 4px;
+  }
+
+  .product-price {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--brand-primary);
+  }
+}
+
+.step-actions {
+  display: flex;
+  justify-content: flex-end;
+
+  :host ::ng-deep .p-button {
+    min-width: 160px;
+    justify-content: center;
+  }
+
+  @media (max-width: 768px) {
+    :host ::ng-deep .p-button { width: 100%; }
+  }
+}
+
+// ── Step 2 ────────────────────────────────────────────────────────────────
+.selected-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--brand-primary-bg);
+  border: 1px solid #fcd9a0;
+  border-radius: var(--radius);
+  padding: 14px 16px;
+
+  .sp-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1f2937;
+  }
+  .sp-price {
+    font-size: 15px;
+    color: var(--brand-primary);
+    font-weight: 600;
+  }
+}
+
+.section-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 12px;
+}
+
+.quantity-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.quantity-control {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  .qty-value {
+    font-size: 26px;
+    font-weight: 700;
+    color: #1f2937;
+    min-width: 40px;
+    text-align: center;
+  }
+}
+
+.qty-subtotal {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.payment-section { display: flex; flex-direction: column; }
+
+.payment-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  max-width: 480px;
+}
+
+.pay-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 14px 8px;
+  border-radius: var(--radius);
+  border: 2px solid transparent;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.15s;
+
+  i { font-size: 20px; }
+
+  &:hover { filter: brightness(0.97); }
+  &:active { transform: scale(0.97); }
+
+  &.efectivo {
+    background: var(--color-efectivo-bg);
+    color: var(--color-efectivo-text);
+    border-color: var(--color-efectivo-border);
+
+    &.selected {
+      border-color: var(--color-efectivo-text);
+      box-shadow: 0 0 0 3px rgba(59, 109, 17, 0.15);
+    }
+  }
+
+  &.yape {
+    background: var(--color-yape-bg);
+    color: var(--color-yape-text);
+    border-color: var(--color-yape-border);
+
+    &.selected {
+      border-color: var(--color-yape-text);
+      box-shadow: 0 0 0 3px rgba(60, 52, 137, 0.15);
+    }
+  }
+
+  &.plin {
+    background: var(--color-plin-bg);
+    color: var(--color-plin-text);
+    border-color: var(--color-plin-border);
+
+    &.selected {
+      border-color: var(--color-plin-text);
+      box-shadow: 0 0 0 3px rgba(12, 68, 124, 0.15);
+    }
+  }
+}
+
+// ── Step 3 – Confirmation ─────────────────────────────────────────────────
+.confirmation-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 560px;
+}
+
+.confirm-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.confirm-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.confirm-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+
+  .confirm-label { color: #6b7280; }
+  .confirm-value { font-weight: 600; color: #1f2937; }
+}
+
+.confirm-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--brand-primary-bg);
+  border: 1px solid #fcd9a0;
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  font-weight: 700;
+  font-size: 15px;
+  color: #1f2937;
+
+  .total-amount {
+    font-size: 22px;
+    color: var(--brand-primary);
+  }
+}
+
+.confirm-actions {
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 10px;
+
+  :host ::ng-deep .p-button {
+    min-width: 160px;
+    justify-content: center;
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    :host ::ng-deep .p-button { width: 100%; }
+  }
+}

@@ -1,0 +1,71 @@
+<div class="login-page">
+  <div class="login-card">
+
+    <div class="login-logo">
+      <i class="pi pi-star-fill logo-icon"></i>
+      <h1>Restobar</h1>
+      <p class="logo-sub">Sistema de ventas</p>
+    </div>
+
+    <!-- ── Paso 1: Selección de usuario ─────────────────────────────────── -->
+    @if (step() === 1) {
+      <h2 class="step-title">Selecciona tu usuario</h2>
+
+      <div class="user-grid">
+        @for (user of users(); track user.id) {
+          <div
+            class="user-card"
+            [class.selected]="selectedUser()?.id === user.id"
+            (click)="selectUser(user)">
+            <div class="user-avatar">{{ user.initials }}</div>
+            <div class="user-name">{{ user.name }}</div>
+            <div class="user-role">{{ roleLabel(user.role) }}</div>
+          </div>
+        }
+      </div>
+
+      <p-button
+        label="Continuar"
+        icon="pi pi-arrow-right"
+        iconPos="right"
+        styleClass="w-full"
+        [disabled]="!selectedUser()"
+        (onClick)="goToPin()"
+        pTooltip="Selecciona un usuario para continuar"
+        [tooltipDisabled]="!!selectedUser()" />
+    }
+
+    <!-- ── Paso 2: Ingreso de PIN ────────────────────────────────────────── -->
+    @if (step() === 2) {
+      <button class="back-btn" (click)="backToUsers()">
+        <i class="pi pi-arrow-left"></i> Volver
+      </button>
+
+      <h2 class="step-title">Hola, {{ selectedUser()?.name }}</h2>
+      <p class="pin-hint">Ingresa tu PIN de 4 dígitos</p>
+
+      <div class="pin-dots">
+        @for (i of [1, 2, 3, 4]; track i) {
+          <div class="pin-dot" [class.filled]="pin().length >= i"></div>
+        }
+      </div>
+
+      @if (error()) {
+        <p-message severity="error" [text]="error()" styleClass="pin-error" />
+      }
+
+      <div class="pin-keypad">
+        @for (key of keys; track $index) {
+          <button
+            class="key-btn"
+            [class.empty-key]="key === ''"
+            [disabled]="key === '' || checking()"
+            (click)="keyPress(key)">
+            {{ key }}
+          </button>
+        }
+      </div>
+    }
+
+  </div>
+</div>

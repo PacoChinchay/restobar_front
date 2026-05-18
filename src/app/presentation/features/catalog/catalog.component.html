@@ -1,0 +1,29 @@
+<div class="catalog">
+
+  <div class="catalog-header">
+    <h2 class="page-title">Catálogo de productos</h2>
+    <p-button
+      label="Agregar producto"
+      icon="pi pi-plus"
+      [outlined]="true"
+      [disabled]="true"
+      pTooltip="Disponible próximamente"
+      tooltipPosition="left" />
+  </div>
+
+  @for (cat of categories(); track cat) {
+    <div class="category-section">
+      <h3 class="category-title">{{ cat }}</h3>
+      <p-divider styleClass="divider-slim" />
+      <div class="product-list">
+        @for (product of productsByCategory()[cat]; track product.id) {
+          <div class="product-row">
+            <span class="product-name">{{ product.name }}</span>
+            <span class="product-price">S/ {{ product.price | number:'1.2-2' }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+</div>

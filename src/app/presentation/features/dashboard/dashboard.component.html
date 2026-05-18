@@ -1,0 +1,76 @@
+<div class="dashboard">
+  <h2 class="page-title">Resumen del día</h2>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <i class="pi pi-spin pi-spinner"></i>
+      <span>Cargando...</span>
+    </div>
+  } @else {
+
+    <!-- ── Métricas principales ──────────────────────────────────────────── -->
+    <div class="metrics-grid">
+      <p-card styleClass="metric-card metric-total">
+        <div class="metric-label">Total del día</div>
+        <div class="metric-value">S/ {{ summary()?.totalAmount | number:'1.2-2' }}</div>
+        <div class="metric-sub">{{ summary()?.totalSales }} ventas</div>
+      </p-card>
+
+      <p-card styleClass="metric-card metric-efectivo">
+        <div class="metric-label">Efectivo</div>
+        <div class="metric-value">S/ {{ summary()?.byPaymentMethod?.efectivo | number:'1.2-2' }}</div>
+      </p-card>
+
+      <p-card styleClass="metric-card metric-digital">
+        <div class="metric-label">Digital</div>
+        <div class="metric-value">S/ {{ digital() | number:'1.2-2' }}</div>
+        <div class="metric-sub">Yape + Plin</div>
+      </p-card>
+    </div>
+
+    <!-- ── Desglose por método ───────────────────────────────────────────── -->
+    <div class="breakdown-row">
+      <span class="breakdown-chip efectivo">
+        Efectivo: S/ {{ summary()?.byPaymentMethod?.efectivo }}
+      </span>
+      <span class="breakdown-chip yape">
+        Yape: S/ {{ summary()?.byPaymentMethod?.yape }}
+      </span>
+      <span class="breakdown-chip plin">
+        Plin: S/ {{ summary()?.byPaymentMethod?.plin }}
+      </span>
+    </div>
+
+    <!-- ── Últimas ventas ────────────────────────────────────────────────── -->
+    <h3 class="section-title">Últimas ventas</h3>
+
+    <div class="sales-list">
+      @if (!summary()?.recentSales?.length) {
+        <div class="empty-state">No hay ventas registradas hoy.</div>
+      }
+      @for (sale of summary()?.recentSales; track sale.id) {
+        <div class="sale-item">
+          <div class="sale-left">
+            <span class="sale-name">{{ sale.productName }}</span>
+            <span class="sale-qty">× {{ sale.quantity }}</span>
+          </div>
+          <div class="sale-right">
+            <span class="sale-time">{{ formatTime(sale.registeredAt) }}</span>
+            <span class="payment-badge {{ sale.paymentMethod }}">
+              {{ paymentLabel(sale.paymentMethod) }}
+            </span>
+            <span class="sale-total">S/ {{ sale.total }}</span>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- ── CTA ──────────────────────────────────────────────────────────── -->
+    <p-button
+      label="Registrar nueva venta"
+      icon="pi pi-plus"
+      iconPos="left"
+      styleClass="new-sale-btn"
+      routerLink="/sales/new" />
+  }
+</div>

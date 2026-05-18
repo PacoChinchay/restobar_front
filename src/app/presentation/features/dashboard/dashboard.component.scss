@@ -1,0 +1,185 @@
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 1100px;
+}
+
+.page-title {
+  font-size: var(--font-xl);
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 60px 0;
+  color: #6b7280;
+  font-size: 17px;
+
+  i { font-size: 22px; }
+}
+
+// ── Metrics ──────────────────────────────────────────────────────────────
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+
+    > :first-child { grid-column: 1 / -1; }
+  }
+}
+
+:host ::ng-deep {
+  .metric-card.p-card {
+    border-radius: var(--radius);
+    overflow: hidden;
+
+    .p-card-body { padding: 16px 18px; }
+  }
+
+  .metric-total    { background: var(--brand-primary-bg); border-left: 4px solid var(--brand-primary); }
+  .metric-efectivo { background: var(--color-efectivo-bg); border-left: 4px solid var(--color-efectivo-border); }
+  .metric-digital  { background: var(--color-yape-bg); border-left: 4px solid var(--color-yape-border); }
+}
+
+.metric-label {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metric-value {
+  font-size: var(--font-xl);
+  font-weight: 700;
+  color: #1f2937;
+  line-height: 1.2;
+  margin: 6px 0 4px;
+}
+
+.metric-sub {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+// ── Breakdown ─────────────────────────────────────────────────────────────
+.breakdown-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.breakdown-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+
+  &.efectivo {
+    background: var(--color-efectivo-bg);
+    color: var(--color-efectivo-text);
+    border: 1px solid var(--color-efectivo-border);
+  }
+  &.yape {
+    background: var(--color-yape-bg);
+    color: var(--color-yape-text);
+    border: 1px solid var(--color-yape-border);
+  }
+  &.plin {
+    background: var(--color-plin-bg);
+    color: var(--color-plin-text);
+    border: 1px solid var(--color-plin-border);
+  }
+}
+
+// ── Sales list ────────────────────────────────────────────────────────────
+.section-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 4px;
+}
+
+.sales-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sale-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #f3f4f6;
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  gap: 8px;
+
+  .sale-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+
+    .sale-name {
+      font-weight: 600;
+      font-size: 14px;
+      color: #1f2937;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .sale-qty {
+      font-size: 13px;
+      color: #6b7280;
+      white-space: nowrap;
+    }
+  }
+
+  .sale-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+
+    .sale-time {
+      font-size: 13px;
+      color: #9ca3af;
+    }
+    .sale-total {
+      font-weight: 700;
+      font-size: 14px;
+      color: #1f2937;
+      min-width: 70px;
+      text-align: right;
+    }
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 24px;
+  color: #9ca3af;
+  font-size: 15px;
+}
+
+// ── CTA Button ───────────────────────────────────────────────────────────
+:host ::ng-deep .new-sale-btn {
+  justify-content: center;
+  background: var(--brand-primary) !important;
+  border-color: var(--brand-primary) !important;
+
+  @media (max-width: 768px) { width: 100%; }
+}

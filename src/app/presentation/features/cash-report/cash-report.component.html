@@ -1,0 +1,76 @@
+<div class="cash-report">
+
+  <div class="report-header">
+    <h2 class="page-title">Arqueo de caja</h2>
+    <p-button
+      label="Exportar a Excel"
+      icon="pi pi-file-excel"
+      [outlined]="true"
+      [disabled]="true"
+      pTooltip="Disponible próximamente"
+      tooltipPosition="left" />
+  </div>
+
+  <!-- ── Resumen de métodos ──────────────────────────────────────────────── -->
+  <div class="summary-grid">
+    <div class="summary-card efectivo">
+      <div class="summary-label">Efectivo</div>
+      <div class="summary-value">S/ {{ summary()?.byPaymentMethod?.efectivo | number:'1.2-2' }}</div>
+    </div>
+    <div class="summary-card yape">
+      <div class="summary-label">Yape</div>
+      <div class="summary-value">S/ {{ summary()?.byPaymentMethod?.yape | number:'1.2-2' }}</div>
+    </div>
+    <div class="summary-card plin">
+      <div class="summary-label">Plin</div>
+      <div class="summary-value">S/ {{ summary()?.byPaymentMethod?.plin | number:'1.2-2' }}</div>
+    </div>
+    <div class="summary-card total">
+      <div class="summary-label">Total del día</div>
+      <div class="summary-value">S/ {{ summary()?.totalAmount | number:'1.2-2' }}</div>
+    </div>
+  </div>
+
+  <!-- ── Tabla de ventas ────────────────────────────────────────────────── -->
+  <h3 class="section-title">Detalle de ventas del día</h3>
+
+  <p-table
+    [value]="allSales()"
+    styleClass="p-datatable-striped"
+    [tableStyle]="{ 'min-width': '100%' }">
+
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Producto</th>
+        <th style="text-align:center">Cant.</th>
+        <th style="text-align:center">Hora</th>
+        <th>Método</th>
+        <th style="text-align:right">Total</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-sale>
+      <tr>
+        <td>{{ sale.productName }}</td>
+        <td style="text-align:center">{{ sale.quantity }}</td>
+        <td style="text-align:center">{{ formatTime(sale.registeredAt) }}</td>
+        <td>
+          <span class="payment-badge {{ sale.paymentMethod }}">
+            {{ paymentLabel(sale.paymentMethod) }}
+          </span>
+        </td>
+        <td style="text-align:right; font-weight:700">S/ {{ sale.total | number:'1.2-2' }}</td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="5" style="text-align:center; padding:24px; color:#9ca3af">
+          No hay ventas registradas hoy.
+        </td>
+      </tr>
+    </ng-template>
+
+  </p-table>
+
+</div>
