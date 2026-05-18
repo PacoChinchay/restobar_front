@@ -7,11 +7,12 @@ import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { InputNumber } from 'primeng/inputnumber';
 import { Select } from 'primeng/select';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { Product, ProductCategory } from '../../../core/domain/models/product.model';
 import { GetProductsUseCase } from '../../../core/application/use-cases/get-products.use-case';
 import { CreateProductUseCase } from '../../../core/application/use-cases/create-product.use-case';
 import { UpdateProductUseCase } from '../../../core/application/use-cases/update-product.use-case';
+import { DeleteProductUseCase } from '../../../core/application/use-cases/delete-product.use-case';
 import { AuthStore } from '../../../core/application/auth.store';
 
 @Component({
@@ -25,8 +26,10 @@ export class CatalogComponent implements OnInit {
   private getProducts = inject(GetProductsUseCase);
   private createProduct = inject(CreateProductUseCase);
   private updateProduct = inject(UpdateProductUseCase);
+  private deleteProduct = inject(DeleteProductUseCase);
   private authStore = inject(AuthStore);
   private messageService = inject(MessageService);
+  private confirmationService = inject(ConfirmationService);
 
   readonly products = signal<Product[]>([]);
   readonly saving = signal(false);
@@ -81,6 +84,38 @@ export class CatalogComponent implements OnInit {
     this.newName = '';
     this.newPrice = null;
     this.newCategory = 'Platos';
+  }
+
+  confirmDelete(product: Product) {
+    this.confirmationService.confirm({
+      message: `¿Estás seguro de que quieres eliminar "${product.name}"?`,
+      header: 'Eliminar producto',
+      icon: 'pi pi-trash',
+      acceptLabel: 'Eliminar',
+      rejectLabel: 'Cancelar',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => this.doDelete(product),
+    });
+  }
+
+  private async doDelete(product: Product) {
+    try {
+      await this.deleteProduct.execute(product.id);
+      this.products.update(list => list.filter(p => p.id !== product.id));
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Producto eliminado',
+        detail: `${product.name} eliminado del catálogo.`,
+        life: 3000,
+      });
+    } catch {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'No se pudo eliminar el producto.',
+        life: 4000,
+      });
+    }
   }
 
   async saveProduct() {

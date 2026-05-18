@@ -36,4 +36,8 @@ export class MockProductRepository extends ProductRepositoryPort {
   update(_id: number, _data: { name: string; price: number; category: ProductCategory }): Promise<Product> {
     throw new Error('Not implemented');
   }
+
+  delete(_id: number): Promise<void> {
+    throw new Error('Not implemented');
+  }
 }

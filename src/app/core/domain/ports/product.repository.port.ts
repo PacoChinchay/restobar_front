@@ -5,4 +5,5 @@ export abstract class ProductRepositoryPort {
   abstract getActive(): Promise<Product[]>;
   abstract create(data: { name: string; price: number; category: ProductCategory }): Promise<Product>;
   abstract update(id: number, data: { name: string; price: number; category: ProductCategory }): Promise<Product>;
+  abstract delete(id: number): Promise<void>;
 }

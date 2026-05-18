@@ -29,6 +29,13 @@
                   severity="secondary"
                   size="small"
                   (onClick)="openEditDialog(product)" />
+                <p-button
+                  icon="pi pi-trash"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="danger"
+                  size="small"
+                  (onClick)="confirmDelete(product)" />
               }
             </div>
           </div>
