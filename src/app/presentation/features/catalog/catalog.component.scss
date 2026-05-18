@@ -57,3 +57,44 @@
     color: var(--brand-primary);
   }
 }
+
+/* Dialog form */
+.dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 4px 0 8px;
+}
+
+.dialog-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dialog-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid #f3f4f6;
+  margin-top: 4px;
+}
+
+:host ::ng-deep .dialog-form {
+  input[pInputText],
+  .p-inputnumber,
+  .p-select {
+    width: 100%;
+  }
+
+  .p-inputnumber-input {
+    width: 100%;
+  }
+}

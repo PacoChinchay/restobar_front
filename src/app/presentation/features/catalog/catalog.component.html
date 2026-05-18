@@ -33,16 +33,18 @@
   [visible]="dialogVisible"
   (visibleChange)="dialogVisible = $event"
   [modal]="true"
-  [style]="{ width: '400px' }"
+  [style]="{ width: '420px' }"
   (onHide)="resetForm()">
 
   <div class="dialog-form">
+
     <div class="dialog-field">
-      <label>Nombre</label>
+      <label class="dialog-label">Nombre</label>
       <input type="text" pInputText [(ngModel)]="newName" placeholder="Ej: Lomo Saltado" />
     </div>
+
     <div class="dialog-field">
-      <label>Precio (S/)</label>
+      <label class="dialog-label">Precio (S/)</label>
       <p-inputnumber
         [(ngModel)]="newPrice"
         mode="decimal"
@@ -51,19 +53,22 @@
         [min]="0.01"
         placeholder="0.00" />
     </div>
+
     <div class="dialog-field">
-      <label>Categoría</label>
+      <label class="dialog-label">Categoría</label>
       <p-select
         [(ngModel)]="newCategory"
         [options]="categoryOptions"
         optionLabel="label"
-        optionValue="value" />
+        optionValue="value"
+        appendTo="body" />
     </div>
-  </div>
 
-  <ng-template pTemplate="footer">
-    <p-button label="Cancelar" [text]="true" severity="secondary" (onClick)="closeDialog()" />
-    <p-button label="Guardar" (onClick)="saveProduct()" [loading]="saving()" />
-  </ng-template>
+    <div class="dialog-actions">
+      <p-button label="Cancelar" [text]="true" severity="secondary" (onClick)="closeDialog()" />
+      <p-button label="Guardar" (onClick)="saveProduct()" [loading]="saving()" />
+    </div>
+
+  </div>
 
 </p-dialog>
