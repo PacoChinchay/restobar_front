@@ -1,6 +1,7 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { provideHttpClient } from '@angular/common/http';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { providePrimeNG } from 'primeng/config';
 import { definePreset } from '@primeuix/styled';
@@ -10,9 +11,9 @@ import { routes } from './app.routes';
 import { ProductRepositoryPort } from './core/domain/ports/product.repository.port';
 import { SaleRepositoryPort } from './core/domain/ports/sale.repository.port';
 import { AuthPort } from './core/domain/ports/auth.port';
-import { MockProductRepository } from './infrastructure/adapters/mock/mock-product.repository';
-import { MockSaleRepository } from './infrastructure/adapters/mock/mock-sale.repository';
-import { MockAuthAdapter } from './infrastructure/adapters/mock/mock-auth.adapter';
+import { HttpProductRepository } from './infrastructure/adapters/http/http-product.repository';
+import { HttpSaleRepository } from './infrastructure/adapters/http/http-sale.repository';
+import { HttpAuthAdapter } from './infrastructure/adapters/http/http-auth.adapter';
 
 const RestobarTheme = definePreset(Aura, {
   semantic: {
@@ -44,10 +45,11 @@ export const appConfig: ApplicationConfig = {
       },
       ripple: true,
     }),
+    provideHttpClient(),
     MessageService,
     ConfirmationService,
-    { provide: ProductRepositoryPort, useClass: MockProductRepository },
-    { provide: SaleRepositoryPort,    useClass: MockSaleRepository    },
-    { provide: AuthPort,              useClass: MockAuthAdapter        },
+    { provide: ProductRepositoryPort, useClass: HttpProductRepository },
+    { provide: SaleRepositoryPort,    useClass: HttpSaleRepository    },
+    { provide: AuthPort,              useClass: HttpAuthAdapter        },
   ],
 };

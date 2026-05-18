@@ -85,6 +85,13 @@ export class NewSaleComponent implements OnInit {
         life: 3000,
       });
       setTimeout(() => this.router.navigate(['/dashboard']), 1200);
+    } catch {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error al registrar',
+        detail: 'No se pudo registrar la venta. Verifique la conexión e intente nuevamente.',
+        life: 5000,
+      });
     } finally {
       this.saving.set(false);
     }
