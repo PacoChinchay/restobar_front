@@ -11,6 +11,7 @@ import { MessageService } from 'primeng/api';
 import { Product, ProductCategory } from '../../../core/domain/models/product.model';
 import { GetProductsUseCase } from '../../../core/application/use-cases/get-products.use-case';
 import { CreateProductUseCase } from '../../../core/application/use-cases/create-product.use-case';
+import { UpdateProductUseCase } from '../../../core/application/use-cases/update-product.use-case';
 import { AuthStore } from '../../../core/application/auth.store';
 
 @Component({
@@ -23,12 +24,15 @@ import { AuthStore } from '../../../core/application/auth.store';
 export class CatalogComponent implements OnInit {
   private getProducts = inject(GetProductsUseCase);
   private createProduct = inject(CreateProductUseCase);
+  private updateProduct = inject(UpdateProductUseCase);
   private authStore = inject(AuthStore);
   private messageService = inject(MessageService);
 
   readonly products = signal<Product[]>([]);
   readonly saving = signal(false);
+  readonly editingProduct = signal<Product | null>(null);
   readonly isAdmin = computed(() => this.authStore.currentUser()?.role === 'admin');
+  readonly dialogTitle = computed(() => this.editingProduct() ? 'Editar producto' : 'Nuevo producto');
 
   readonly categories = computed(() => [...new Set(this.products().map(p => p.category))]);
 
@@ -56,6 +60,15 @@ export class CatalogComponent implements OnInit {
   }
 
   openDialog() {
+    this.editingProduct.set(null);
+    this.dialogVisible = true;
+  }
+
+  openEditDialog(product: Product) {
+    this.editingProduct.set(product);
+    this.newName = product.name;
+    this.newPrice = product.price;
+    this.newCategory = product.category;
     this.dialogVisible = true;
   }
 
@@ -64,6 +77,7 @@ export class CatalogComponent implements OnInit {
   }
 
   resetForm() {
+    this.editingProduct.set(null);
     this.newName = '';
     this.newPrice = null;
     this.newCategory = 'Platos';
@@ -81,25 +95,36 @@ export class CatalogComponent implements OnInit {
     }
 
     this.saving.set(true);
+    const editing = this.editingProduct();
     try {
-      const created = await this.createProduct.execute({
-        name: this.newName.trim(),
-        price: this.newPrice,
-        category: this.newCategory,
-      });
-      this.products.update(list => [...list, created]);
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Producto creado',
-        detail: `${created.name} agregado al catálogo.`,
-        life: 3000,
-      });
+      const data = { name: this.newName.trim(), price: this.newPrice, category: this.newCategory };
+
+      if (editing) {
+        const updated = await this.updateProduct.execute(editing.id, data);
+        this.products.update(list => list.map(p => p.id === updated.id ? updated : p));
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Producto actualizado',
+          detail: `${updated.name} actualizado correctamente.`,
+          life: 3000,
+        });
+      } else {
+        const created = await this.createProduct.execute(data);
+        this.products.update(list => [...list, created]);
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Producto creado',
+          detail: `${created.name} agregado al catálogo.`,
+          life: 3000,
+        });
+      }
+
       this.closeDialog();
     } catch {
       this.messageService.add({
         severity: 'error',
         summary: 'Error',
-        detail: 'No se pudo crear el producto. Intente nuevamente.',
+        detail: editing ? 'No se pudo actualizar el producto.' : 'No se pudo crear el producto.',
         life: 4000,
       });
     } finally {

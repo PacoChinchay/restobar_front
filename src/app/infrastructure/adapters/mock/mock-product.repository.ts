@@ -32,4 +32,8 @@ export class MockProductRepository extends ProductRepositoryPort {
     MOCK_PRODUCTS.push(product);
     return Promise.resolve(product);
   }
+
+  update(_id: number, _data: { name: string; price: number; category: ProductCategory }): Promise<Product> {
+    throw new Error('Not implemented');
+  }
 }

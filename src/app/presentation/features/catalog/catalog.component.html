@@ -19,7 +19,18 @@
         @for (product of productsByCategory()[cat]; track product.id) {
           <div class="product-row">
             <span class="product-name">{{ product.name }}</span>
-            <span class="product-price">S/ {{ product.price | number:'1.2-2' }}</span>
+            <div class="product-row-end">
+              <span class="product-price">S/ {{ product.price | number:'1.2-2' }}</span>
+              @if (isAdmin()) {
+                <p-button
+                  icon="pi pi-pencil"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="secondary"
+                  size="small"
+                  (onClick)="openEditDialog(product)" />
+              }
+            </div>
           </div>
         }
       </div>
@@ -29,7 +40,7 @@
 </div>
 
 <p-dialog
-  header="Nuevo producto"
+  [header]="dialogTitle()"
   [visible]="dialogVisible"
   (visibleChange)="dialogVisible = $event"
   [modal]="true"

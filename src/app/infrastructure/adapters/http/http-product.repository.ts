@@ -20,4 +20,8 @@ export class HttpProductRepository extends ProductRepositoryPort {
   create(data: { name: string; price: number; category: ProductCategory }): Promise<Product> {
     return firstValueFrom(this.http.post<Product>(`${API_BASE}/api/Products`, data));
   }
+
+  update(id: number, data: { name: string; price: number; category: ProductCategory }): Promise<Product> {
+    return firstValueFrom(this.http.put<Product>(`${API_BASE}/api/Products/${id}`, data));
+  }
 }
