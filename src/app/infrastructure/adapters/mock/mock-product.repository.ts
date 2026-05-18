@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Product } from '../../../core/domain/models/product.model';
+import { Product, ProductCategory } from '../../../core/domain/models/product.model';
 import { ProductRepositoryPort } from '../../../core/domain/ports/product.repository.port';
 
 const MOCK_PRODUCTS: Product[] = [
@@ -17,11 +17,19 @@ const MOCK_PRODUCTS: Product[] = [
 
 @Injectable()
 export class MockProductRepository extends ProductRepositoryPort {
+  private nextId = MOCK_PRODUCTS.length + 1;
+
   getAll(): Promise<Product[]> {
     return Promise.resolve([...MOCK_PRODUCTS]);
   }
 
   getActive(): Promise<Product[]> {
     return Promise.resolve(MOCK_PRODUCTS.filter(p => p.active));
+  }
+
+  create(data: { name: string; price: number; category: ProductCategory }): Promise<Product> {
+    const product: Product = { ...data, id: this.nextId++, active: true };
+    MOCK_PRODUCTS.push(product);
+    return Promise.resolve(product);
   }
 }

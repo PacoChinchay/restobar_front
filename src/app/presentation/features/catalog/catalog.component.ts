@@ -1,22 +1,34 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { Button } from 'primeng/button';
 import { Divider } from 'primeng/divider';
-import { Tooltip } from 'primeng/tooltip';
-import { Product } from '../../../core/domain/models/product.model';
+import { Dialog } from 'primeng/dialog';
+import { InputText } from 'primeng/inputtext';
+import { InputNumber } from 'primeng/inputnumber';
+import { Select } from 'primeng/select';
+import { MessageService } from 'primeng/api';
+import { Product, ProductCategory } from '../../../core/domain/models/product.model';
 import { GetProductsUseCase } from '../../../core/application/use-cases/get-products.use-case';
+import { CreateProductUseCase } from '../../../core/application/use-cases/create-product.use-case';
+import { AuthStore } from '../../../core/application/auth.store';
 
 @Component({
   selector: 'app-catalog',
   standalone: true,
-  imports: [Button, Divider, Tooltip, DecimalPipe],
+  imports: [Button, Divider, Dialog, InputText, InputNumber, Select, FormsModule, DecimalPipe],
   templateUrl: './catalog.component.html',
   styleUrl: './catalog.component.scss',
 })
 export class CatalogComponent implements OnInit {
   private getProducts = inject(GetProductsUseCase);
+  private createProduct = inject(CreateProductUseCase);
+  private authStore = inject(AuthStore);
+  private messageService = inject(MessageService);
 
   readonly products = signal<Product[]>([]);
+  readonly saving = signal(false);
+  readonly isAdmin = computed(() => this.authStore.currentUser()?.role === 'admin');
 
   readonly categories = computed(() => [...new Set(this.products().map(p => p.category))]);
 
@@ -28,7 +40,70 @@ export class CatalogComponent implements OnInit {
     return map;
   });
 
+  readonly categoryOptions = [
+    { label: 'Platos',  value: 'Platos'  as ProductCategory },
+    { label: 'Bebidas', value: 'Bebidas' as ProductCategory },
+    { label: 'Postres', value: 'Postres' as ProductCategory },
+  ];
+
+  dialogVisible = false;
+  newName = '';
+  newPrice: number | null = null;
+  newCategory: ProductCategory = 'Platos';
+
   async ngOnInit() {
     this.products.set(await this.getProducts.execute());
+  }
+
+  openDialog() {
+    this.dialogVisible = true;
+  }
+
+  closeDialog() {
+    this.dialogVisible = false;
+  }
+
+  resetForm() {
+    this.newName = '';
+    this.newPrice = null;
+    this.newCategory = 'Platos';
+  }
+
+  async saveProduct() {
+    if (!this.newName.trim() || !this.newPrice || this.newPrice <= 0) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Campos requeridos',
+        detail: 'Completa el nombre y un precio válido.',
+        life: 3000,
+      });
+      return;
+    }
+
+    this.saving.set(true);
+    try {
+      const created = await this.createProduct.execute({
+        name: this.newName.trim(),
+        price: this.newPrice,
+        category: this.newCategory,
+      });
+      this.products.update(list => [...list, created]);
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Producto creado',
+        detail: `${created.name} agregado al catálogo.`,
+        life: 3000,
+      });
+      this.closeDialog();
+    } catch {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'No se pudo crear el producto. Intente nuevamente.',
+        life: 4000,
+      });
+    } finally {
+      this.saving.set(false);
+    }
   }
 }

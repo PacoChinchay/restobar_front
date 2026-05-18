@@ -2,13 +2,13 @@
 
   <div class="catalog-header">
     <h2 class="page-title">Catálogo de productos</h2>
-    <p-button
-      label="Agregar producto"
-      icon="pi pi-plus"
-      [outlined]="true"
-      [disabled]="true"
-      pTooltip="Disponible próximamente"
-      tooltipPosition="left" />
+    @if (isAdmin()) {
+      <p-button
+        label="Agregar producto"
+        icon="pi pi-plus"
+        [outlined]="true"
+        (onClick)="openDialog()" />
+    }
   </div>
 
   @for (cat of categories(); track cat) {
@@ -27,3 +27,43 @@
   }
 
 </div>
+
+<p-dialog
+  header="Nuevo producto"
+  [visible]="dialogVisible"
+  (visibleChange)="dialogVisible = $event"
+  [modal]="true"
+  [style]="{ width: '400px' }"
+  (onHide)="resetForm()">
+
+  <div class="dialog-form">
+    <div class="dialog-field">
+      <label>Nombre</label>
+      <input type="text" pInputText [(ngModel)]="newName" placeholder="Ej: Lomo Saltado" />
+    </div>
+    <div class="dialog-field">
+      <label>Precio (S/)</label>
+      <p-inputnumber
+        [(ngModel)]="newPrice"
+        mode="decimal"
+        [minFractionDigits]="2"
+        [maxFractionDigits]="2"
+        [min]="0.01"
+        placeholder="0.00" />
+    </div>
+    <div class="dialog-field">
+      <label>Categoría</label>
+      <p-select
+        [(ngModel)]="newCategory"
+        [options]="categoryOptions"
+        optionLabel="label"
+        optionValue="value" />
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <p-button label="Cancelar" [text]="true" severity="secondary" (onClick)="closeDialog()" />
+    <p-button label="Guardar" (onClick)="saveProduct()" [loading]="saving()" />
+  </ng-template>
+
+</p-dialog>

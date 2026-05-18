@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { Product } from '../../../core/domain/models/product.model';
+import { Product, ProductCategory } from '../../../core/domain/models/product.model';
 import { ProductRepositoryPort } from '../../../core/domain/ports/product.repository.port';
 import { API_BASE } from './api.base';
 
@@ -15,5 +15,9 @@ export class HttpProductRepository extends ProductRepositoryPort {
 
   getActive(): Promise<Product[]> {
     return firstValueFrom(this.http.get<Product[]>(`${API_BASE}/api/Products`));
+  }
+
+  create(data: { name: string; price: number; category: ProductCategory }): Promise<Product> {
+    return firstValueFrom(this.http.post<Product>(`${API_BASE}/api/Products`, data));
   }
 }
