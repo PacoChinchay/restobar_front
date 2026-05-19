@@ -21,9 +21,19 @@ export const routes: Routes = [
           import('./presentation/features/dashboard/dashboard.component').then(m => m.DashboardComponent),
       },
       {
-        path: 'sales/new',
+        path: 'orders',
         loadComponent: () =>
-          import('./presentation/features/sales/new-sale/new-sale.component').then(m => m.NewSaleComponent),
+          import('./presentation/features/orders/orders.component').then(m => m.OrdersComponent),
+      },
+      {
+        path: 'pos',
+        loadComponent: () =>
+          import('./presentation/features/pos/pos.component').then(m => m.PosComponent),
+      },
+      {
+        path: 'pos/:id',
+        loadComponent: () =>
+          import('./presentation/features/pos/pos.component').then(m => m.PosComponent),
       },
       {
         path: 'catalog',

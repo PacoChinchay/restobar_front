@@ -1,0 +1,140 @@
+<div class="orders-page">
+
+  <!-- ── Header ─────────────────────────────────────────────────────────────── -->
+  <div class="page-header">
+    <h2 class="page-title">Comandas activas</h2>
+    <p-button
+      label="Nueva comanda"
+      icon="pi pi-plus"
+      (onClick)="goToNewOrder()" />
+  </div>
+
+  <!-- ── Loading ───────────────────────────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="empty-state">
+      <i class="pi pi-spin pi-spinner" style="font-size:2rem; color:#9ca3af"></i>
+    </div>
+  }
+
+  <!-- ── Empty state ───────────────────────────────────────────────────────── -->
+  @if (!loading() && orders().length === 0) {
+    <div class="empty-state">
+      <i class="pi pi-inbox empty-icon"></i>
+      <p class="empty-title">No hay comandas abiertas</p>
+      <p class="empty-sub">Crea una nueva comanda para comenzar a tomar pedidos.</p>
+      <p-button label="Nueva comanda" icon="pi pi-plus" [outlined]="true" (onClick)="goToNewOrder()" />
+    </div>
+  }
+
+  <!-- ── Order cards ───────────────────────────────────────────────────────── -->
+  @if (!loading() && orders().length > 0) {
+    <div class="orders-grid">
+      @for (order of orders(); track order.id) {
+        <div class="order-card">
+
+          <!-- Normal view -->
+          @if (payingOrderId() !== order.id) {
+            <div class="card-header">
+              <div class="table-badge">Mesa {{ order.tableNumber }}</div>
+              <span class="elapsed">{{ elapsed(order.createdAt) }}</span>
+            </div>
+
+            <ul class="items-list">
+              @for (item of order.items; track item.id) {
+                <li class="item-row">
+                  <span class="item-name">{{ item.productName }}</span>
+                  <span class="item-qty">×{{ item.quantity }}</span>
+                  <span class="item-sub">S/ {{ item.subtotal | number:'1.2-2' }}</span>
+                </li>
+              }
+            </ul>
+
+            <div class="card-footer">
+              <span class="total-label">Total</span>
+              <span class="total-amount">S/ {{ order.totalAmount | number:'1.2-2' }}</span>
+            </div>
+
+            <div class="card-actions">
+              <p-button
+                label="Editar"
+                icon="pi pi-pencil"
+                [outlined]="true"
+                size="small"
+                severity="secondary"
+                (onClick)="editOrder(order)" />
+              <p-button
+                label="Cobrar"
+                icon="pi pi-wallet"
+                size="small"
+                (onClick)="startPay(order)" />
+              <p-button
+                icon="pi pi-times"
+                [text]="true"
+                severity="danger"
+                size="small"
+                pTooltip="Cancelar comanda"
+                tooltipPosition="top"
+                (onClick)="onCancelOrder(order)" />
+            </div>
+          }
+
+          <!-- Paying view (inline) -->
+          @if (payingOrderId() === order.id) {
+            <div class="card-header">
+              <div class="table-badge">Mesa {{ order.tableNumber }}</div>
+              <span class="pay-heading">Cobrar comanda</span>
+            </div>
+
+            <div class="pay-total-inline">
+              <span>Total a cobrar</span>
+              <strong>S/ {{ order.totalAmount | number:'1.2-2' }}</strong>
+            </div>
+
+            <div class="pay-method-label">Método de pago</div>
+            <div class="pay-methods">
+              <button
+                class="method-btn"
+                [class.active]="selectedPayment() === 'efectivo'"
+                (click)="selectPayment('efectivo')">
+                <i class="pi pi-money-bill"></i>
+                Efectivo
+              </button>
+              <button
+                class="method-btn yape"
+                [class.active]="selectedPayment() === 'yape'"
+                (click)="selectPayment('yape')">
+                <i class="pi pi-mobile"></i>
+                Yape
+              </button>
+              <button
+                class="method-btn plin"
+                [class.active]="selectedPayment() === 'plin'"
+                (click)="selectPayment('plin')">
+                <i class="pi pi-mobile"></i>
+                Plin
+              </button>
+            </div>
+
+            <div class="card-actions">
+              <p-button
+                label="Cancelar"
+                [text]="true"
+                severity="secondary"
+                size="small"
+                (onClick)="cancelPay()" />
+              <p-button
+                label="Confirmar cobro"
+                icon="pi pi-check"
+                size="small"
+                [disabled]="!selectedPayment()"
+                [loading]="paying()"
+                (onClick)="confirmPay()" />
+            </div>
+          }
+
+        </div>
+      }
+    </div>
+  }
+
+</div>
