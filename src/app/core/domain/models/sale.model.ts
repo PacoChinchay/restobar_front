@@ -18,3 +18,8 @@ export interface DailySummary {
   byPaymentMethod: Record<PaymentMethod, number>;
   recentSales: Sale[];
 }
+
+export interface DailyTotal {
+  date: string;
+  total: number;
+}

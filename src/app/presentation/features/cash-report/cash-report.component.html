@@ -1,5 +1,6 @@
 <div class="cash-report">
 
+  <!-- ── Header ─────────────────────────────────────────────────────────────── -->
   <div class="report-header">
     <h2 class="page-title">Arqueo de caja</h2>
     <p-button
@@ -11,7 +12,67 @@
       tooltipPosition="left" />
   </div>
 
-  <!-- ── Resumen de métodos ──────────────────────────────────────────────── -->
+  <!-- ── Gráfico semanal ────────────────────────────────────────────────────── -->
+  <div class="week-chart">
+    <p-chart
+      type="bar"
+      [data]="chartData()"
+      [options]="chartOptions"
+      height="160px"
+      styleClass="week-chart-canvas" />
+  </div>
+
+  <!-- ── Navegación de fecha ────────────────────────────────────────────────── -->
+  <div class="date-nav">
+    <p-button
+      icon="pi pi-chevron-left"
+      [text]="true"
+      [rounded]="true"
+      size="small"
+      (onClick)="prevDay()"
+      [disabled]="loading()" />
+
+    <div class="date-display">
+      <span class="date-text">{{ formattedDate() }}</span>
+
+      @if (comparison(); as cmp) {
+        <span
+          class="comparison"
+          [class.up]="cmp.delta > 0"
+          [class.down]="cmp.delta < 0"
+          [class.flat]="cmp.delta === 0">
+          <i class="pi"
+            [class.pi-arrow-up]="cmp.delta > 0"
+            [class.pi-arrow-down]="cmp.delta < 0"
+            [class.pi-minus]="cmp.delta === 0"></i>
+          @if (cmp.pct !== null) {
+            {{ cmp.pct | number:'1.0-1' }}%
+          } @else {
+            nuevo
+          }
+          vs. ayer
+        </span>
+      }
+    </div>
+
+    <p-button
+      icon="pi pi-chevron-right"
+      [text]="true"
+      [rounded]="true"
+      size="small"
+      (onClick)="nextDay()"
+      [disabled]="isToday() || loading()" />
+
+    <p-button
+      label="Hoy"
+      [outlined]="true"
+      size="small"
+      (onClick)="goToToday()"
+      [disabled]="loading()"
+      [style]="{ visibility: isToday() ? 'hidden' : 'visible' }" />
+  </div>
+
+  <!-- ── Resumen de métodos ──────────────────────────────────────────────────── -->
   <div class="summary-grid">
     <div class="summary-card efectivo">
       <div class="summary-label">Efectivo</div>
@@ -31,8 +92,13 @@
     </div>
   </div>
 
-  <!-- ── Tabla de ventas ────────────────────────────────────────────────── -->
-  <h3 class="section-title">Detalle de ventas del día</h3>
+  <!-- ── Tabla de ventas ────────────────────────────────────────────────────── -->
+  <h3 class="section-title">
+    Detalle de ventas
+    @if (summary()?.totalSales) {
+      <span class="sale-count">{{ summary()!.totalSales }} venta{{ summary()!.totalSales !== 1 ? 's' : '' }}</span>
+    }
+  </h3>
 
   <p-table
     [value]="allSales()"
@@ -66,7 +132,7 @@
     <ng-template pTemplate="emptymessage">
       <tr>
         <td colspan="5" style="text-align:center; padding:24px; color:#9ca3af">
-          No hay ventas registradas hoy.
+          No hay ventas registradas para este día.
         </td>
       </tr>
     </ng-template>

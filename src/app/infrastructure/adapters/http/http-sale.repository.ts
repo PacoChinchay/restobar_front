@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { DailySummary, PaymentMethod, Sale } from '../../../core/domain/models/sale.model';
+import { DailySummary, DailyTotal, PaymentMethod, Sale } from '../../../core/domain/models/sale.model';
 import { SaleRepositoryPort } from '../../../core/domain/ports/sale.repository.port';
 import { API_BASE } from './api.base';
 
@@ -55,5 +55,11 @@ export class HttpSaleRepository extends SaleRepositoryPort {
       },
       recentSales: (dto.recentSales ?? []).map(mapSale),
     };
+  }
+
+  getWeeklyTotals(endDate: Date): Promise<DailyTotal[]> {
+    return firstValueFrom(
+      this.http.get<DailyTotal[]>(`${API_BASE}/api/Sales/weekly`, { params: { endDate: toDateParam(endDate) } }),
+    );
   }
 }

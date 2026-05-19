@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DailySummary, PaymentMethod, Sale } from '../../../core/domain/models/sale.model';
+import { DailySummary, DailyTotal, PaymentMethod, Sale } from '../../../core/domain/models/sale.model';
 import { SaleRepositoryPort } from '../../../core/domain/ports/sale.repository.port';
 
 const today = new Date();
@@ -37,5 +37,19 @@ export class MockSaleRepository extends SaleRepositoryPort {
         .sort((a, b) => b.registeredAt.getTime() - a.registeredAt.getTime())
         .slice(0, 5),
     };
+  }
+
+  async getWeeklyTotals(endDate: Date): Promise<DailyTotal[]> {
+    const result: DailyTotal[] = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(endDate);
+      d.setDate(d.getDate() - i);
+      const sales = await this.getByDate(d);
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      result.push({ date: `${y}-${m}-${day}`, total: sales.reduce((s, x) => s + x.total, 0) });
+    }
+    return result;
   }
 }

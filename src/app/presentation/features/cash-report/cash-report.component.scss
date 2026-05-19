@@ -17,7 +17,58 @@
   color: #1f2937;
 }
 
-// ── Summary grid ──────────────────────────────────────────────────────────
+// ── Weekly chart ──────────────────────────────────────────────────────────────
+.week-chart {
+  background: #fff;
+  border-radius: var(--radius);
+  padding: 20px 16px 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+}
+
+:host ::ng-deep .week-chart-canvas canvas {
+  cursor: pointer;
+}
+
+// ── Date navigation ───────────────────────────────────────────────────────────
+.date-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.date-display {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.date-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2937;
+  text-transform: capitalize;
+}
+
+.comparison {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+
+  i { font-size: 10px; }
+
+  &.up   { background: #dcfce7; color: #16a34a; }
+  &.down { background: #fee2e2; color: #dc2626; }
+  &.flat { background: #f3f4f6; color: #6b7280; }
+}
+
+// ── Summary grid ──────────────────────────────────────────────────────────────
 .summary-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -81,9 +132,18 @@
   font-size: 15px;
   font-weight: 600;
   color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-// ── Table overrides ───────────────────────────────────────────────────────
+.sale-count {
+  font-size: 12px;
+  font-weight: 500;
+  color: #9ca3af;
+}
+
+// ── Table overrides ───────────────────────────────────────────────────────────
 :host ::ng-deep {
   .p-datatable {
     border-radius: var(--radius);
