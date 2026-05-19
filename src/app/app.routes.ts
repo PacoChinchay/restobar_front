@@ -31,6 +31,12 @@ export const routes: Routes = [
           import('./presentation/features/catalog/catalog.component').then(m => m.CatalogComponent),
       },
       {
+        path: 'categories',
+        loadComponent: () =>
+          import('./presentation/features/categories/categories.component').then(m => m.CategoriesComponent),
+        canActivate: [adminGuard],
+      },
+      {
         path: 'cash-report',
         loadComponent: () =>
           import('./presentation/features/cash-report/cash-report.component').then(m => m.CashReportComponent),

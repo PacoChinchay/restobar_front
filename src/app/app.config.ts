@@ -11,9 +11,11 @@ import { routes } from './app.routes';
 import { ProductRepositoryPort } from './core/domain/ports/product.repository.port';
 import { SaleRepositoryPort } from './core/domain/ports/sale.repository.port';
 import { AuthPort } from './core/domain/ports/auth.port';
+import { CategoryRepositoryPort } from './core/domain/ports/category.repository.port';
 import { HttpProductRepository } from './infrastructure/adapters/http/http-product.repository';
 import { HttpSaleRepository } from './infrastructure/adapters/http/http-sale.repository';
 import { HttpAuthAdapter } from './infrastructure/adapters/http/http-auth.adapter';
+import { HttpCategoryRepository } from './infrastructure/adapters/http/http-category.repository';
 
 const RestobarTheme = definePreset(Aura, {
   semantic: {
@@ -48,8 +50,9 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(),
     MessageService,
     ConfirmationService,
-    { provide: ProductRepositoryPort, useClass: HttpProductRepository },
-    { provide: SaleRepositoryPort,    useClass: HttpSaleRepository    },
-    { provide: AuthPort,              useClass: HttpAuthAdapter        },
+    { provide: ProductRepositoryPort,  useClass: HttpProductRepository  },
+    { provide: SaleRepositoryPort,     useClass: HttpSaleRepository     },
+    { provide: AuthPort,               useClass: HttpAuthAdapter         },
+    { provide: CategoryRepositoryPort, useClass: HttpCategoryRepository  },
   ],
 };

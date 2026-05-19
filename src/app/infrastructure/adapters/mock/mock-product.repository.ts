@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Product, ProductCategory } from '../../../core/domain/models/product.model';
+import { Product } from '../../../core/domain/models/product.model';
 import { ProductRepositoryPort } from '../../../core/domain/ports/product.repository.port';
 
 const MOCK_PRODUCTS: Product[] = [
@@ -27,13 +27,13 @@ export class MockProductRepository extends ProductRepositoryPort {
     return Promise.resolve(MOCK_PRODUCTS.filter(p => p.active));
   }
 
-  create(data: { name: string; price: number; category: ProductCategory }): Promise<Product> {
+  create(data: { name: string; price: number; category: string }): Promise<Product> {
     const product: Product = { ...data, id: this.nextId++, active: true };
     MOCK_PRODUCTS.push(product);
     return Promise.resolve(product);
   }
 
-  update(_id: number, _data: { name: string; price: number; category: ProductCategory }): Promise<Product> {
+  update(_id: number, _data: { name: string; price: number; category: string }): Promise<Product> {
     throw new Error('Not implemented');
   }
 

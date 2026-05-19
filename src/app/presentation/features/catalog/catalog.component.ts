@@ -8,11 +8,12 @@ import { InputText } from 'primeng/inputtext';
 import { InputNumber } from 'primeng/inputnumber';
 import { Select } from 'primeng/select';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { Product, ProductCategory } from '../../../core/domain/models/product.model';
+import { Product } from '../../../core/domain/models/product.model';
 import { GetProductsUseCase } from '../../../core/application/use-cases/get-products.use-case';
 import { CreateProductUseCase } from '../../../core/application/use-cases/create-product.use-case';
 import { UpdateProductUseCase } from '../../../core/application/use-cases/update-product.use-case';
 import { DeleteProductUseCase } from '../../../core/application/use-cases/delete-product.use-case';
+import { GetCategoriesUseCase } from '../../../core/application/use-cases/get-categories.use-case';
 import { AuthStore } from '../../../core/application/auth.store';
 
 @Component({
@@ -27,6 +28,7 @@ export class CatalogComponent implements OnInit {
   private createProduct = inject(CreateProductUseCase);
   private updateProduct = inject(UpdateProductUseCase);
   private deleteProduct = inject(DeleteProductUseCase);
+  private getCategoriesUseCase = inject(GetCategoriesUseCase);
   private authStore = inject(AuthStore);
   private messageService = inject(MessageService);
   private confirmationService = inject(ConfirmationService);
@@ -47,23 +49,30 @@ export class CatalogComponent implements OnInit {
     return map;
   });
 
-  readonly categoryOptions = [
-    { label: 'Platos',  value: 'Platos'  as ProductCategory },
-    { label: 'Bebidas', value: 'Bebidas' as ProductCategory },
-    { label: 'Postres', value: 'Postres' as ProductCategory },
-  ];
+  categoryOptions: { label: string; value: string }[] = [];
 
   dialogVisible = false;
   newName = '';
   newPrice: number | null = null;
-  newCategory: ProductCategory = 'Platos';
+  newCategory = '';
 
   async ngOnInit() {
-    this.products.set(await this.getProducts.execute());
+    const [products, cats] = await Promise.all([
+      this.getProducts.execute(),
+      this.getCategoriesUseCase.execute(),
+    ]);
+    this.products.set(products);
+    this.categoryOptions = cats.map(c => ({ label: c.name, value: c.name }));
+    if (this.categoryOptions.length > 0) {
+      this.newCategory = this.categoryOptions[0].value;
+    }
   }
 
   openDialog() {
     this.editingProduct.set(null);
+    this.newName = '';
+    this.newPrice = null;
+    this.newCategory = this.categoryOptions[0]?.value ?? '';
     this.dialogVisible = true;
   }
 
@@ -83,7 +92,7 @@ export class CatalogComponent implements OnInit {
     this.editingProduct.set(null);
     this.newName = '';
     this.newPrice = null;
-    this.newCategory = 'Platos';
+    this.newCategory = this.categoryOptions[0]?.value ?? '';
   }
 
   confirmDelete(product: Product) {

@@ -1,0 +1,66 @@
+<div class="categories">
+
+  <div class="categories-header">
+    <h2 class="page-title">Categorías</h2>
+    <p-button
+      label="Agregar categoría"
+      icon="pi pi-plus"
+      [outlined]="true"
+      (onClick)="openDialog()" />
+  </div>
+
+  <p-divider styleClass="divider-slim" />
+
+  <div class="category-list">
+    @for (cat of categories(); track cat.id) {
+      <div class="category-row">
+        <span class="category-name">{{ cat.name }}</span>
+        <div class="category-actions">
+          <p-button
+            icon="pi pi-pencil"
+            [rounded]="true"
+            [text]="true"
+            severity="secondary"
+            size="small"
+            (onClick)="openEditDialog(cat)" />
+          <p-button
+            icon="pi pi-trash"
+            [rounded]="true"
+            [text]="true"
+            severity="danger"
+            size="small"
+            (onClick)="confirmDelete(cat)" />
+        </div>
+      </div>
+    }
+
+    @if (categories().length === 0) {
+      <p class="empty-state">No hay categorías registradas.</p>
+    }
+  </div>
+
+</div>
+
+<p-dialog
+  [header]="dialogTitle"
+  [visible]="dialogVisible"
+  (visibleChange)="dialogVisible = $event"
+  [modal]="true"
+  [style]="{ width: '380px' }"
+  (onHide)="resetForm()">
+
+  <div class="dialog-form">
+
+    <div class="dialog-field">
+      <label class="dialog-label">Nombre</label>
+      <input type="text" pInputText [(ngModel)]="newName" placeholder="Ej: Entradas" />
+    </div>
+
+    <div class="dialog-actions">
+      <p-button label="Cancelar" [text]="true" severity="secondary" (onClick)="closeDialog()" />
+      <p-button label="Guardar" (onClick)="saveCategory()" [loading]="saving()" />
+    </div>
+
+  </div>
+
+</p-dialog>

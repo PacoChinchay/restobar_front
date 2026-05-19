@@ -40,6 +40,10 @@
           <span>Catálogo</span>
         </a>
         @if (currentUser()?.role === 'admin') {
+          <a routerLink="/categories" routerLinkActive="nav-active" class="nav-item">
+            <i class="pi pi-tags"></i>
+            <span>Categorías</span>
+          </a>
           <a routerLink="/cash-report" routerLinkActive="nav-active" class="nav-item">
             <i class="pi pi-chart-bar"></i>
             <span>Arqueo de caja</span>
@@ -68,6 +72,10 @@
       <span>Catálogo</span>
     </a>
     @if (currentUser()?.role === 'admin') {
+      <a routerLink="/categories" routerLinkActive="nav-active" class="nav-item">
+        <i class="pi pi-tags"></i>
+        <span>Categorías</span>
+      </a>
       <a routerLink="/cash-report" routerLinkActive="nav-active" class="nav-item">
         <i class="pi pi-chart-bar"></i>
         <span>Arqueo</span>
