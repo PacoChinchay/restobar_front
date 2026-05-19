@@ -1,0 +1,114 @@
+<div class="users-page">
+
+  <div class="page-header">
+    <h2 class="page-title">Usuarios</h2>
+    <p-button label="Nuevo usuario" icon="pi pi-plus" (onClick)="openCreate()" />
+  </div>
+
+  @if (loading()) {
+    <div class="loading-state"><i class="pi pi-spin pi-spinner"></i></div>
+  }
+
+  @if (!loading()) {
+    <div class="users-table">
+      @for (user of users(); track user.id) {
+        <div class="user-row">
+          <div class="user-avatar">{{ user.initials }}</div>
+          <div class="user-info">
+            <span class="user-name">{{ user.name }}</span>
+            <span class="user-id">ID: {{ user.id }}</span>
+          </div>
+          <span class="role-badge {{ user.role }}">{{ roleLabel(user.role) }}</span>
+          <div class="user-actions">
+            <p-button
+              icon="pi pi-pencil"
+              [text]="true"
+              severity="secondary"
+              size="small"
+              pTooltip="Editar"
+              (onClick)="openEdit(user)" />
+            <p-button
+              icon="pi pi-trash"
+              [text]="true"
+              severity="danger"
+              size="small"
+              pTooltip="Eliminar"
+              (onClick)="confirmDelete(user)" />
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+</div>
+
+<!-- ── Dialog crear / editar ──────────────────────────────────────────────── -->
+<p-dialog
+  [header]="editingId ? 'Editar usuario' : 'Nuevo usuario'"
+  [visible]="dialogVisible()"
+  (visibleChange)="dialogVisible.set($event)"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="false"
+  styleClass="user-dialog">
+
+  <div class="form-grid">
+
+    <div class="field">
+      <label>Nombre completo</label>
+      <input
+        pInputText
+        [(ngModel)]="formName"
+        placeholder="Ej. Juan Pérez"
+        class="w-full" />
+    </div>
+
+    <div class="field">
+      <label>Rol</label>
+      <p-select
+        [(ngModel)]="formRole"
+        [options]="roleOptions"
+        optionLabel="label"
+        optionValue="value"
+        styleClass="w-full"
+        appendTo="body" />
+    </div>
+
+    <div class="field">
+      <label>PIN{{ editingId ? ' (dejar en blanco para no cambiar)' : '' }}</label>
+      <p-password
+        [(ngModel)]="formPin"
+        [feedback]="false"
+        [toggleMask]="true"
+        placeholder="PIN numérico"
+        styleClass="w-full"
+        inputStyleClass="w-full" />
+    </div>
+
+    @if (formPin) {
+      <div class="field">
+        <label>Confirmar PIN</label>
+        <p-password
+          [(ngModel)]="formPinConfirm"
+          [feedback]="false"
+          [toggleMask]="true"
+          placeholder="Repite el PIN"
+          styleClass="w-full"
+          inputStyleClass="w-full" />
+      </div>
+    }
+
+    <div class="dialog-actions">
+      <p-button label="Cancelar" [text]="true" severity="secondary" (onClick)="dialogVisible.set(false)" />
+      <p-button
+        [label]="editingId ? 'Guardar cambios' : 'Crear usuario'"
+        icon="pi pi-check"
+        [disabled]="!formName.trim()"
+        [loading]="saving()"
+        (onClick)="save()" />
+    </div>
+
+  </div>
+
+</p-dialog>

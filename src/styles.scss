@@ -17,9 +17,9 @@
   --color-plin-text:   #0C447C;
   --color-plin-border: #B5D4F4;
 
-  --font-base: 15px;
-  --font-lg:   16px;
-  --font-xl:   20px;
+  --font-base: 16px;
+  --font-lg:   18px;
+  --font-xl:   22px;
   --btn-height: 40px;
   --radius:    10px;
 }
@@ -51,9 +51,9 @@ body {
 @media (max-width: 768px) {
   :root {
     --btn-height: 52px;
-    --font-base:  16px;
-    --font-lg:    18px;
-    --font-xl:    22px;
+    --font-base:  17px;
+    --font-lg:    19px;
+    --font-xl:    24px;
   }
 
   .p-button {

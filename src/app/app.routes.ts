@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './presentation/shared/guards/auth.guard';
 import { adminGuard } from './presentation/shared/guards/admin.guard';
+import { roleGuard } from './presentation/shared/guards/role.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -39,6 +40,7 @@ export const routes: Routes = [
         path: 'catalog',
         loadComponent: () =>
           import('./presentation/features/catalog/catalog.component').then(m => m.CatalogComponent),
+        canActivate: [roleGuard('administrador', 'cajero')],
       },
       {
         path: 'categories',
@@ -50,6 +52,12 @@ export const routes: Routes = [
         path: 'cash-report',
         loadComponent: () =>
           import('./presentation/features/cash-report/cash-report.component').then(m => m.CashReportComponent),
+        canActivate: [roleGuard('administrador', 'cajero')],
+      },
+      {
+        path: 'users',
+        loadComponent: () =>
+          import('./presentation/features/users/users.component').then(m => m.UsersComponent),
         canActivate: [adminGuard],
       },
     ],

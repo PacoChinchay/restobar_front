@@ -8,9 +8,9 @@ import { API_BASE } from './api.base';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapUser(dto: any): User {
   return {
-    ...dto,
-    pin: '',
-    // Normaliza a minúsculas por si el backend serializa "Admin" en vez de "admin"
+    id: dto.id,
+    name: dto.name,
+    initials: dto.initials,
     role: (dto.role as string).toLowerCase() as UserRole,
   };
 }
@@ -34,5 +34,23 @@ export class HttpAuthAdapter extends AuthPort {
       ),
     );
     return dto ? mapUser(dto) : null;
+  }
+
+  async createUser(name: string, role: UserRole, pin: string): Promise<User> {
+    const dto = await firstValueFrom(
+      this.http.post<any>(`${API_BASE}/api/Users`, { name, role, pin }),
+    );
+    return mapUser(dto);
+  }
+
+  async updateUser(id: string, name: string, role: UserRole, pin?: string): Promise<User> {
+    const dto = await firstValueFrom(
+      this.http.put<any>(`${API_BASE}/api/Users/${id}`, { name, role, pin: pin || null }),
+    );
+    return mapUser(dto);
+  }
+
+  async deleteUser(id: string): Promise<void> {
+    await firstValueFrom(this.http.delete<void>(`${API_BASE}/api/Users/${id}`));
   }
 }

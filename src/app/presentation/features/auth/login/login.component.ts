@@ -84,6 +84,7 @@ export class LoginComponent implements OnInit {
   }
 
   roleLabel(role: string): string {
-    return role === 'admin' ? 'Administrador' : 'Cajero';
+    const labels: Record<string, string> = { administrador: 'Administrador', cajero: 'Cajero', camarero: 'Camarero', cocinero: 'Cocinero' };
+    return labels[role] ?? role;
   }
 }

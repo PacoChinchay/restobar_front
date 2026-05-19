@@ -36,7 +36,7 @@ export class CatalogComponent implements OnInit {
   readonly products = signal<Product[]>([]);
   readonly saving = signal(false);
   readonly editingProduct = signal<Product | null>(null);
-  readonly isAdmin = computed(() => this.authStore.currentUser()?.role === 'admin');
+  readonly isAdmin = computed(() => this.authStore.currentUser()?.role === 'administrador');
   readonly dialogTitle = computed(() => this.editingProduct() ? 'Editar producto' : 'Nuevo producto');
 
   readonly categories = computed(() => [...new Set(this.products().map(p => p.category))]);

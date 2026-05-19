@@ -31,22 +31,33 @@
           <i class="pi pi-home"></i>
           <span>Inicio</span>
         </a>
-        <a routerLink="/orders" routerLinkActive="nav-active" class="nav-item">
-          <i class="pi pi-receipt"></i>
-          <span>Comandas</span>
-        </a>
-        <a routerLink="/catalog" routerLinkActive="nav-active" class="nav-item">
-          <i class="pi pi-list"></i>
-          <span>Catálogo</span>
-        </a>
-        @if (currentUser()?.role === 'admin') {
-          <a routerLink="/categories" routerLinkActive="nav-active" class="nav-item">
-            <i class="pi pi-tags"></i>
-            <span>Categorías</span>
+
+        @if (['administrador','cajero','camarero','cocinero'].includes(currentUser()?.role ?? '')) {
+          <a routerLink="/orders" routerLinkActive="nav-active" class="nav-item">
+            <i class="pi pi-receipt"></i>
+            <span>Comandas</span>
+          </a>
+        }
+
+        @if (['administrador','cajero'].includes(currentUser()?.role ?? '')) {
+          <a routerLink="/catalog" routerLinkActive="nav-active" class="nav-item">
+            <i class="pi pi-list"></i>
+            <span>Catálogo</span>
           </a>
           <a routerLink="/cash-report" routerLinkActive="nav-active" class="nav-item">
             <i class="pi pi-chart-bar"></i>
             <span>Arqueo de caja</span>
+          </a>
+        }
+
+        @if (currentUser()?.role === 'administrador') {
+          <a routerLink="/categories" routerLinkActive="nav-active" class="nav-item">
+            <i class="pi pi-tags"></i>
+            <span>Categorías</span>
+          </a>
+          <a routerLink="/users" routerLinkActive="nav-active" class="nav-item">
+            <i class="pi pi-users"></i>
+            <span>Usuarios</span>
           </a>
         }
       </nav>
@@ -63,22 +74,25 @@
       <i class="pi pi-home"></i>
       <span>Inicio</span>
     </a>
-    <a routerLink="/orders" routerLinkActive="nav-active" class="nav-item">
-      <i class="pi pi-receipt"></i>
-      <span>Comandas</span>
-    </a>
-    <a routerLink="/catalog" routerLinkActive="nav-active" class="nav-item">
-      <i class="pi pi-list"></i>
-      <span>Catálogo</span>
-    </a>
-    @if (currentUser()?.role === 'admin') {
-      <a routerLink="/categories" routerLinkActive="nav-active" class="nav-item">
-        <i class="pi pi-tags"></i>
-        <span>Categorías</span>
+
+    @if (['administrador','cajero','camarero','cocinero'].includes(currentUser()?.role ?? '')) {
+      <a routerLink="/orders" routerLinkActive="nav-active" class="nav-item">
+        <i class="pi pi-receipt"></i>
+        <span>Comandas</span>
       </a>
+    }
+
+    @if (['administrador','cajero'].includes(currentUser()?.role ?? '')) {
       <a routerLink="/cash-report" routerLinkActive="nav-active" class="nav-item">
         <i class="pi pi-chart-bar"></i>
         <span>Arqueo</span>
+      </a>
+    }
+
+    @if (currentUser()?.role === 'administrador') {
+      <a routerLink="/users" routerLinkActive="nav-active" class="nav-item">
+        <i class="pi pi-users"></i>
+        <span>Usuarios</span>
       </a>
     }
   </nav>
