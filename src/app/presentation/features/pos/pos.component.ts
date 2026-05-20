@@ -4,7 +4,8 @@ import { DecimalPipe } from '@angular/common';
 import { Button } from 'primeng/button';
 import { MessageService } from 'primeng/api';
 import { Product } from '../../../core/domain/models/product.model';
-import { Order, OrderItem } from '../../../core/domain/models/order.model';
+import { Order } from '../../../core/domain/models/order.model';
+import { MenuModel } from '../../../core/domain/models/menu.model';
 import { GetProductsUseCase } from '../../../core/application/use-cases/get-products.use-case';
 import { GetCategoriesUseCase } from '../../../core/application/use-cases/get-categories.use-case';
 import { CreateOrderUseCase } from '../../../core/application/use-cases/create-order.use-case';
@@ -12,6 +13,7 @@ import { GetOrderUseCase } from '../../../core/application/use-cases/get-order.u
 import { AddOrderItemUseCase } from '../../../core/application/use-cases/add-order-item.use-case';
 import { RemoveOrderItemUseCase } from '../../../core/application/use-cases/remove-order-item.use-case';
 import { UpdateOrderItemUseCase } from '../../../core/application/use-cases/update-order-item.use-case';
+import { ManageMenusUseCase } from '../../../core/application/use-cases/manage-menus.use-case';
 
 interface CartItem {
   productId: number;
@@ -37,10 +39,12 @@ export class PosComponent implements OnInit {
   private addOrderItem = inject(AddOrderItemUseCase);
   private removeOrderItem = inject(RemoveOrderItemUseCase);
   private updateOrderItem = inject(UpdateOrderItemUseCase);
+  private manageMenus = inject(ManageMenusUseCase);
   private messageService = inject(MessageService);
 
   readonly editingOrderId = signal<number | null>(null);
   readonly editingOrder = signal<Order | null>(null);
+  readonly activeMenu = signal<MenuModel | null>(null);
 
   readonly products = signal<Product[]>([]);
   readonly categories = signal<string[]>([]);
@@ -60,16 +64,25 @@ export class PosComponent implements OnInit {
 
   readonly isEditing = computed(() => this.editingOrderId() !== null);
 
+  menuStock(productId: number): number | null {
+    const menu = this.activeMenu();
+    if (!menu) return null;
+    const item = menu.items.find(i => i.productId === productId);
+    return item ? item.remainingQuantity : null;
+  }
+
   async ngOnInit() {
     const idParam = this.route.snapshot.paramMap.get('id');
-    const [products, cats] = await Promise.all([
+    const [products, cats, activeMenu] = await Promise.all([
       this.getProducts.execute(),
       this.getCategories.execute(),
+      this.manageMenus.getActive(),
     ]);
     this.products.set(products.filter(p => p.active));
     const catNames = cats.map(c => c.name);
     this.categories.set(catNames);
     if (catNames.length) this.selectedCategory.set(catNames[0]);
+    this.activeMenu.set(activeMenu);
 
     if (idParam) {
       const id = Number(idParam);
@@ -91,8 +104,18 @@ export class PosComponent implements OnInit {
   }
 
   addToCart(product: Product) {
-    const existing = this.cart().find(i => i.productId === product.id);
-    if (existing) {
+    const stock = this.menuStock(product.id);
+    const inCart = this.cart().find(i => i.productId === product.id)?.quantity ?? 0;
+    if (stock !== null && inCart >= stock) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Stock agotado',
+        detail: `Solo quedan ${stock} unidad${stock !== 1 ? 'es' : ''} de "${product.name}" en el menú.`,
+        life: 3000,
+      });
+      return;
+    }
+    if (inCart > 0) {
       this.cart.update(items =>
         items.map(i => i.productId === product.id ? { ...i, quantity: i.quantity + 1 } : i),
       );
@@ -117,6 +140,16 @@ export class PosComponent implements OnInit {
   }
 
   increaseQty(item: CartItem) {
+    const stock = this.menuStock(item.productId);
+    if (stock !== null && item.quantity >= stock) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Stock agotado',
+        detail: `Solo quedan ${stock} unidad${stock !== 1 ? 'es' : ''} de "${item.productName}" en el menú.`,
+        life: 3000,
+      });
+      return;
+    }
     this.cart.update(items =>
       items.map(i => i.productId === item.productId ? { ...i, quantity: i.quantity + 1 } : i),
     );
@@ -190,15 +223,7 @@ export class PosComponent implements OnInit {
     }
   }
 
-  increaseTable() {
-    this.tableNumber.update(n => n + 1);
-  }
-
-  decreaseTable() {
-    if (this.tableNumber() > 1) this.tableNumber.update(n => n - 1);
-  }
-
-  goBack() {
-    this.router.navigate(['/orders']);
-  }
+  increaseTable() { this.tableNumber.update(n => n + 1); }
+  decreaseTable() { if (this.tableNumber() > 1) this.tableNumber.update(n => n - 1); }
+  goBack() { this.router.navigate(['/orders']); }
 }

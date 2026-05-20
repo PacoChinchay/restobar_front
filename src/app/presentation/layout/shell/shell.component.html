@@ -51,6 +51,10 @@
         }
 
         @if (currentUser()?.role === 'administrador') {
+          <a routerLink="/menus" routerLinkActive="nav-active" class="nav-item">
+            <i class="pi pi-calendar"></i>
+            <span>Menúes</span>
+          </a>
           <a routerLink="/categories" routerLinkActive="nav-active" class="nav-item">
             <i class="pi pi-tags"></i>
             <span>Categorías</span>

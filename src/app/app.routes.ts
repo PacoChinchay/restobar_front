@@ -49,6 +49,12 @@ export const routes: Routes = [
         canActivate: [adminGuard],
       },
       {
+        path: 'menus',
+        loadComponent: () =>
+          import('./presentation/features/menus/menus.component').then(m => m.MenusComponent),
+        canActivate: [adminGuard],
+      },
+      {
         path: 'cash-report',
         loadComponent: () =>
           import('./presentation/features/cash-report/cash-report.component').then(m => m.CashReportComponent),

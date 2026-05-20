@@ -30,9 +30,21 @@
       <!-- Product grid -->
       <div class="product-grid">
         @for (product of filteredProducts(); track product.id) {
-          <button class="product-card" (click)="addToCart(product)">
+          <button
+            class="product-card"
+            [class.out-of-stock]="menuStock(product.id) === 0"
+            [disabled]="menuStock(product.id) === 0"
+            (click)="addToCart(product)">
             <span class="product-name">{{ product.name }}</span>
             <span class="product-price">S/ {{ product.price | number:'1.2-2' }}</span>
+            @if (menuStock(product.id) !== null) {
+              <span
+                class="stock-badge"
+                [class.stock-ok]="menuStock(product.id)! > 0"
+                [class.stock-out]="menuStock(product.id) === 0">
+                {{ menuStock(product.id) === 0 ? 'Agotado' : menuStock(product.id) + ' disp.' }}
+              </span>
+            }
           </button>
         }
         @if (filteredProducts().length === 0) {

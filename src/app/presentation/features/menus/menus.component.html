@@ -1,0 +1,192 @@
+<!-- ══ LISTA DE MENÚES ════════════════════════════════════════════════════════ -->
+@if (!editorOpen()) {
+  <div class="menus-page">
+
+    <div class="page-header">
+      <h2 class="page-title">Menúes</h2>
+      <p-button label="Nuevo menú" icon="pi pi-plus" (onClick)="openCreate()" />
+    </div>
+
+    @if (loading()) {
+      <div class="loading-state"><i class="pi pi-spin pi-spinner"></i></div>
+    }
+
+    @if (!loading() && menus().length === 0) {
+      <div class="empty-state">
+        <i class="pi pi-calendar"></i>
+        <p>No hay menúes creados. Crea el primero.</p>
+      </div>
+    }
+
+    <div class="menus-list">
+      @for (menu of menus(); track menu.id) {
+        <div class="menu-card" [class.active-card]="menu.isActive">
+
+          <div class="menu-card-header">
+            <div class="menu-title-group">
+              @if (menu.isActive) {
+                <span class="active-badge"><i class="pi pi-circle-fill"></i> Activo</span>
+              }
+              <h3 class="menu-name">{{ menu.name }}</h3>
+              <span class="menu-meta">{{ menu.items.length }} plato{{ menu.items.length !== 1 ? 's' : '' }}</span>
+            </div>
+            <div class="menu-actions">
+              <p-button
+                [label]="menu.isActive ? 'Desactivar' : 'Activar'"
+                [severity]="menu.isActive ? 'secondary' : 'success'"
+                [outlined]="true"
+                size="small"
+                (onClick)="toggleActive(menu)" />
+              <p-button
+                icon="pi pi-pencil"
+                [text]="true"
+                severity="secondary"
+                size="small"
+                pTooltip="Editar"
+                (onClick)="openEdit(menu)" />
+              <p-button
+                icon="pi pi-trash"
+                [text]="true"
+                severity="danger"
+                size="small"
+                pTooltip="Eliminar"
+                (onClick)="confirmDelete(menu)" />
+            </div>
+          </div>
+
+          @if (menu.items.length > 0) {
+            <div class="menu-items">
+              @for (item of menu.items; track item.id) {
+                <div class="menu-item-row">
+                  <span class="item-name">{{ item.productName }}</span>
+                  <div class="item-qty-group">
+                    @if (editingQtyItemId() === item.id) {
+                      <div class="qty-edit">
+                        <input
+                          type="number"
+                          [(ngModel)]="editingQtyValue"
+                          [min]="0"
+                          [max]="item.initialQuantity"
+                          class="qty-input" />
+                        <p-button icon="pi pi-check" size="small" [text]="true" severity="success" (onClick)="saveQty(menu, item)" />
+                        <p-button icon="pi pi-times" size="small" [text]="true" severity="secondary" (onClick)="cancelEditQty()" />
+                      </div>
+                    } @else {
+                      <span
+                        class="qty-badge"
+                        [class.qty-ok]="item.remainingQuantity > 0"
+                        [class.qty-out]="item.remainingQuantity === 0">
+                        {{ item.remainingQuantity }}/{{ item.initialQuantity }}
+                      </span>
+                      @if (menu.isActive) {
+                        <p-button
+                          icon="pi pi-pencil"
+                          size="small"
+                          [text]="true"
+                          severity="secondary"
+                          pTooltip="Ajustar cantidad"
+                          (onClick)="startEditQty(item)" />
+                      }
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          }
+
+        </div>
+      }
+    </div>
+
+  </div>
+}
+
+<!-- ══ EDITOR DE MENÚ ════════════════════════════════════════════════════════ -->
+@if (editorOpen()) {
+  <div class="editor-page">
+
+    <div class="editor-header">
+      <p-button icon="pi pi-arrow-left" [text]="true" severity="secondary" (onClick)="closeEditor()" />
+      <h2 class="editor-title">{{ editorTitle() }}</h2>
+      <div class="editor-header-right">
+        <input
+          pInputText
+          [(ngModel)]="editorName"
+          placeholder="Nombre del menú (ej: Menú del lunes)"
+          class="name-input" />
+        <p-button
+          label="Guardar menú"
+          icon="pi pi-check"
+          [disabled]="!editorName.trim() || editorItems().length === 0"
+          [loading]="saving()"
+          (onClick)="save()" />
+      </div>
+    </div>
+
+    <div class="editor-layout">
+
+      <!-- Catálogo -->
+      <div class="catalog-panel">
+        <div class="category-tabs">
+          @for (cat of categories(); track cat) {
+            <button
+              class="cat-tab"
+              [class.active]="selectedCategory() === cat"
+              (click)="selectCategory(cat)">
+              {{ cat }}
+            </button>
+          }
+        </div>
+
+        <div class="product-grid">
+          @for (product of filteredProducts(); track product.id) {
+            <button class="product-card" (click)="addProduct(product)">
+              <span class="product-name">{{ product.name }}</span>
+              <span class="product-price">S/ {{ product.price | number:'1.2-2' }}</span>
+              @if (itemQty(product.id) > 0) {
+                <span class="product-qty-badge">{{ itemQty(product.id) }}</span>
+              }
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Platos seleccionados -->
+      <div class="selected-panel">
+        <h3 class="selected-title">Platos del menú</h3>
+
+        @if (editorItems().length === 0) {
+          <div class="selected-empty">
+            <i class="pi pi-calendar-plus" style="font-size:2rem;color:#d1d5db"></i>
+            <p>Haz clic en los productos para agregarlos al menú</p>
+          </div>
+        }
+
+        <div class="selected-list">
+          @for (item of editorItems(); track item.productId) {
+            <div class="selected-item">
+              <div class="selected-item-info">
+                <span class="selected-item-name">{{ item.productName }}</span>
+                <span class="selected-item-price">S/ {{ item.unitPrice | number:'1.2-2' }} c/u</span>
+              </div>
+              <div class="selected-item-controls">
+                <p-button icon="pi pi-minus" [text]="true" [rounded]="true" size="small" severity="secondary" (onClick)="decreaseQty(item)" />
+                <span class="selected-qty">{{ item.quantity }}</span>
+                <p-button icon="pi pi-plus" [text]="true" [rounded]="true" size="small" severity="secondary" (onClick)="increaseQty(item)" />
+                <p-button icon="pi pi-trash" [text]="true" [rounded]="true" size="small" severity="danger" (onClick)="removeItem(item)" />
+              </div>
+            </div>
+          }
+        </div>
+
+        @if (editorItems().length > 0) {
+          <div class="selected-footer">
+            <span>{{ editorItems().length }} plato{{ editorItems().length !== 1 ? 's' : '' }}</span>
+            <span>{{ editorItems().reduce((s,i) => s + i.quantity, 0) }} porciones totales</span>
+          </div>
+        }
+      </div>
+
+    </div>
+  </div>
+}
