@@ -39,6 +39,13 @@
           </a>
         }
 
+        @if (['camarero','cocinero'].includes(currentUser()?.role ?? '')) {
+          <a routerLink="/carta" routerLinkActive="nav-active" class="nav-item">
+            <i class="pi pi-book"></i>
+            <span>Carta / Menú</span>
+          </a>
+        }
+
         @if (['administrador','cajero'].includes(currentUser()?.role ?? '')) {
           <a routerLink="/catalog" routerLinkActive="nav-active" class="nav-item">
             <i class="pi pi-list"></i>
@@ -83,6 +90,13 @@
       <a routerLink="/orders" routerLinkActive="nav-active" class="nav-item">
         <i class="pi pi-receipt"></i>
         <span>Comandas</span>
+      </a>
+    }
+
+    @if (['camarero','cocinero'].includes(currentUser()?.role ?? '')) {
+      <a routerLink="/carta" routerLinkActive="nav-active" class="nav-item">
+        <i class="pi pi-book"></i>
+        <span>Carta</span>
       </a>
     }
 

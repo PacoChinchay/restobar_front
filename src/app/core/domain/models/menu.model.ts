@@ -1,3 +1,5 @@
+export type MenuType = 'daily' | 'food' | 'drinks';
+
 export interface MenuItemModel {
   id: number;
   productId: number;
@@ -10,6 +12,7 @@ export interface MenuItemModel {
 export interface MenuModel {
   id: number;
   name: string;
+  type: MenuType;
   isActive: boolean;
   createdAt: string;
   items: MenuItemModel[];
@@ -17,5 +20,6 @@ export interface MenuModel {
 
 export interface CreateMenuRequest {
   name: string;
+  type: MenuType;
   items: { productId: number; productName: string; unitPrice: number; quantity: number }[];
 }

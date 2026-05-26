@@ -1,0 +1,151 @@
+<div class="carta-page">
+
+  <!-- ── Header ──────────────────────────────────────────────────────────────── -->
+  <div class="carta-header">
+    <p-button icon="pi pi-arrow-left" [text]="true" severity="secondary" (onClick)="goBack()" />
+    <h2 class="carta-title">Nueva comanda</h2>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <i class="pi pi-spin pi-spinner"></i>
+      <span>Cargando carta...</span>
+    </div>
+  }
+
+  @if (!loading()) {
+    <div class="carta-layout">
+
+      <!-- ── Left: Tabs + Items ──────────────────────────────────────────────── -->
+      <div class="menu-panel">
+
+        <!-- Type tabs -->
+        <div class="type-tabs">
+          @for (tab of TAB_CONFIG; track tab.type) {
+            <button
+              class="type-tab"
+              [class.active]="activeTab() === tab.type"
+              (click)="selectTab(tab.type)">
+              <i [class]="'pi ' + tab.icon"></i>
+              {{ tab.label }}
+            </button>
+          }
+        </div>
+
+        <!-- Items grid -->
+        @if (currentMenu() === null) {
+          <div class="no-menu-state">
+            <i class="pi pi-info-circle"></i>
+            <p>{{ emptyMessage() }}</p>
+          </div>
+        }
+
+        @if (currentMenu() !== null) {
+          <div class="items-grid">
+            @for (item of currentItems(); track item.productId) {
+              <button
+                class="item-card"
+                [class.out-of-stock]="item.remainingQuantity === 0"
+                [disabled]="item.remainingQuantity === 0"
+                (click)="addToCart(item)">
+                <span class="item-name">{{ item.productName }}</span>
+                <span class="item-price">S/ {{ item.unitPrice | number:'1.2-2' }}</span>
+                <span
+                  class="stock-badge"
+                  [class.stock-ok]="item.remainingQuantity > 0"
+                  [class.stock-out]="item.remainingQuantity === 0">
+                  {{ item.remainingQuantity === 0 ? 'Agotado' : item.remainingQuantity + ' disp.' }}
+                </span>
+                @if (cartQty(item.productId) > 0) {
+                  <span class="cart-qty-badge">{{ cartQty(item.productId) }}</span>
+                }
+              </button>
+            }
+            @if (currentItems().length === 0) {
+              <p class="empty-items">Esta carta no tiene productos configurados.</p>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- ── Right: Cart ─────────────────────────────────────────────────────── -->
+      <div class="cart-panel">
+
+        <!-- Table selector -->
+        <div class="table-selector">
+          <span class="table-label">Mesa</span>
+          <div class="table-controls">
+            <p-button
+              icon="pi pi-minus"
+              [text]="true"
+              [rounded]="true"
+              size="small"
+              (onClick)="decreaseTable()"
+              [disabled]="tableNumber() <= 1" />
+            <span class="table-number">{{ tableNumber() }}</span>
+            <p-button
+              icon="pi pi-plus"
+              [text]="true"
+              [rounded]="true"
+              size="small"
+              (onClick)="increaseTable()" />
+          </div>
+        </div>
+
+        <!-- Cart items -->
+        <div class="cart-items">
+          @if (cart().length === 0) {
+            <div class="cart-empty">
+              <i class="pi pi-shopping-cart" style="font-size:1.8rem; color:#d1d5db"></i>
+              <p>Selecciona productos de la carta</p>
+            </div>
+          }
+
+          @for (cartItem of cart(); track cartItem.productId) {
+            <div class="cart-item">
+              <div class="cart-item-info">
+                <span class="cart-item-name">{{ cartItem.productName }}</span>
+                <span class="cart-item-price">S/ {{ cartItem.unitPrice | number:'1.2-2' }}</span>
+              </div>
+              <div class="cart-item-controls">
+                <p-button
+                  icon="pi pi-minus"
+                  [text]="true"
+                  [rounded]="true"
+                  size="small"
+                  severity="secondary"
+                  (onClick)="decreaseQty(cartItem)" />
+                <span class="cart-qty">{{ cartItem.quantity }}</span>
+                <p-button
+                  icon="pi pi-plus"
+                  [text]="true"
+                  [rounded]="true"
+                  size="small"
+                  severity="secondary"
+                  (onClick)="increaseQty(cartItem)" />
+              </div>
+              <span class="cart-subtotal">S/ {{ (cartItem.unitPrice * cartItem.quantity) | number:'1.2-2' }}</span>
+            </div>
+          }
+        </div>
+
+        <!-- Total + save -->
+        <div class="cart-footer">
+          <div class="cart-total">
+            <span>Total</span>
+            <strong>S/ {{ cartTotal() | number:'1.2-2' }}</strong>
+          </div>
+          <p-button
+            label="Guardar comanda"
+            icon="pi pi-check"
+            styleClass="w-full"
+            [disabled]="cart().length === 0"
+            [loading]="saving()"
+            (onClick)="saveOrder()" />
+        </div>
+      </div>
+
+    </div>
+  }
+
+</div>

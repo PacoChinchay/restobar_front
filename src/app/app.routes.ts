@@ -55,6 +55,12 @@ export const routes: Routes = [
         canActivate: [adminGuard],
       },
       {
+        path: 'carta',
+        loadComponent: () =>
+          import('./presentation/features/carta-menu/carta-menu.component').then(m => m.CartaMenuComponent),
+        canActivate: [roleGuard('camarero', 'cocinero')],
+      },
+      {
         path: 'cash-report',
         loadComponent: () =>
           import('./presentation/features/cash-report/cash-report.component').then(m => m.CashReportComponent),

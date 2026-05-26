@@ -4,5 +4,5 @@ import { CategoryRepositoryPort } from '../../domain/ports/category.repository.p
 @Injectable({ providedIn: 'root' })
 export class CreateCategoryUseCase {
   private repo = inject(CategoryRepositoryPort);
-  execute(name: string) { return this.repo.create(name); }
+  execute(name: string, isDrink: boolean) { return this.repo.create(name, isDrink); }
 }

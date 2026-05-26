@@ -14,7 +14,12 @@
   <div class="category-list">
     @for (cat of categories(); track cat.id) {
       <div class="category-row">
-        <span class="category-name">{{ cat.name }}</span>
+        <div class="category-name-group">
+          <span class="category-name">{{ cat.name }}</span>
+          @if (cat.isDrink) {
+            <span class="drink-badge"><i class="pi pi-droplet-fill"></i> Bebidas</span>
+          }
+        </div>
         <div class="category-actions">
           <p-button
             icon="pi pi-pencil"
@@ -54,6 +59,11 @@
     <div class="dialog-field">
       <label class="dialog-label">Nombre</label>
       <input type="text" pInputText [(ngModel)]="newName" placeholder="Ej: Entradas" />
+    </div>
+
+    <div class="dialog-field dialog-field-row">
+      <label class="dialog-label">¿Es categoría de bebidas?</label>
+      <p-toggleswitch [(ngModel)]="newIsDrink" />
     </div>
 
     <div class="dialog-actions">

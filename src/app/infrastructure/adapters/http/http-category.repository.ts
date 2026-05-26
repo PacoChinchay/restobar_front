@@ -13,12 +13,12 @@ export class HttpCategoryRepository extends CategoryRepositoryPort {
     return firstValueFrom(this.http.get<Category[]>(`${API_BASE}/api/Categories`));
   }
 
-  create(name: string): Promise<Category> {
-    return firstValueFrom(this.http.post<Category>(`${API_BASE}/api/Categories`, { name }));
+  create(name: string, isDrink: boolean): Promise<Category> {
+    return firstValueFrom(this.http.post<Category>(`${API_BASE}/api/Categories`, { name, isDrink }));
   }
 
-  update(id: number, name: string): Promise<Category> {
-    return firstValueFrom(this.http.put<Category>(`${API_BASE}/api/Categories/${id}`, { name }));
+  update(id: number, name: string, isDrink: boolean): Promise<Category> {
+    return firstValueFrom(this.http.put<Category>(`${API_BASE}/api/Categories/${id}`, { name, isDrink }));
   }
 
   delete(id: number): Promise<void> {

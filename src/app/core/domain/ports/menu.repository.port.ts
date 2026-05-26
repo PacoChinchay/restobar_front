@@ -1,8 +1,8 @@
-import { MenuModel, CreateMenuRequest } from '../models/menu.model';
+import { MenuModel, CreateMenuRequest, MenuType } from '../models/menu.model';
 
 export abstract class MenuRepositoryPort {
   abstract getAll(): Promise<MenuModel[]>;
-  abstract getActive(): Promise<MenuModel | null>;
+  abstract getActive(type?: MenuType): Promise<MenuModel | null>;
   abstract create(request: CreateMenuRequest): Promise<MenuModel>;
   abstract update(id: number, request: CreateMenuRequest): Promise<MenuModel>;
   abstract delete(id: number): Promise<void>;

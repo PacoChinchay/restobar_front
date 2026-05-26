@@ -1,13 +1,13 @@
 import { inject, Injectable } from '@angular/core';
 import { MenuRepositoryPort } from '../../domain/ports/menu.repository.port';
-import { CreateMenuRequest, MenuModel } from '../../domain/models/menu.model';
+import { CreateMenuRequest, MenuModel, MenuType } from '../../domain/models/menu.model';
 
 @Injectable({ providedIn: 'root' })
 export class ManageMenusUseCase {
   private repo = inject(MenuRepositoryPort);
 
   getAll(): Promise<MenuModel[]> { return this.repo.getAll(); }
-  getActive(): Promise<MenuModel | null> { return this.repo.getActive(); }
+  getActive(type: MenuType = 'daily'): Promise<MenuModel | null> { return this.repo.getActive(type); }
   create(req: CreateMenuRequest): Promise<MenuModel> { return this.repo.create(req); }
   update(id: number, req: CreateMenuRequest): Promise<MenuModel> { return this.repo.update(id, req); }
   delete(id: number): Promise<void> { return this.repo.delete(id); }

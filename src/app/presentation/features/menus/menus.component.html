@@ -1,34 +1,56 @@
-<!-- ══ LISTA DE MENÚES ════════════════════════════════════════════════════════ -->
+<!-- ══ LISTA ════════════════════════════════════════════════════════════════════ -->
 @if (!editorOpen()) {
   <div class="menus-page">
 
     <div class="page-header">
-      <h2 class="page-title">Menúes</h2>
-      <p-button label="Nuevo menú" icon="pi pi-plus" (onClick)="openCreate()" />
+      <h2 class="page-title">Menúes y Cartas</h2>
+      <p-button
+        [label]="'Nueva ' + TYPE_LABELS[activeTab()].toLowerCase()"
+        icon="pi pi-plus"
+        (onClick)="openCreate()" />
+    </div>
+
+    <!-- Type tabs -->
+    <div class="type-tabs">
+      @for (tab of tabs; track tab) {
+        <button
+          class="type-tab"
+          [class.active]="activeTab() === tab"
+          (click)="selectTab(tab)">
+          @if (tab === 'daily') { <i class="pi pi-calendar"></i> }
+          @if (tab === 'food')  { <i class="pi pi-list"></i> }
+          @if (tab === 'drinks') { <i class="pi pi-droplet-fill"></i> }
+          {{ TYPE_LABELS[tab] }}
+        </button>
+      }
     </div>
 
     @if (loading()) {
       <div class="loading-state"><i class="pi pi-spin pi-spinner"></i></div>
     }
 
-    @if (!loading() && menus().length === 0) {
+    @if (!loading() && displayedMenus().length === 0) {
       <div class="empty-state">
-        <i class="pi pi-calendar"></i>
-        <p>No hay menúes creados. Crea el primero.</p>
+        @if (activeTab() === 'daily') { <i class="pi pi-calendar"></i> }
+        @if (activeTab() === 'food')  { <i class="pi pi-list"></i> }
+        @if (activeTab() === 'drinks') { <i class="pi pi-droplet-fill"></i> }
+        <p>No hay {{ TYPE_LABELS[activeTab()].toLowerCase() }}s creadas. Crea la primera.</p>
       </div>
     }
 
     <div class="menus-list">
-      @for (menu of menus(); track menu.id) {
+      @for (menu of displayedMenus(); track menu.id) {
         <div class="menu-card" [class.active-card]="menu.isActive">
 
           <div class="menu-card-header">
             <div class="menu-title-group">
               @if (menu.isActive) {
-                <span class="active-badge"><i class="pi pi-circle-fill"></i> Activo</span>
+                <span class="active-badge"><i class="pi pi-circle-fill"></i> Activa</span>
               }
               <h3 class="menu-name">{{ menu.name }}</h3>
-              <span class="menu-meta">{{ menu.items.length }} plato{{ menu.items.length !== 1 ? 's' : '' }}</span>
+              <span class="menu-meta">
+                {{ menu.items.length }} {{ activeTab() === 'drinks' ? 'bebida' : 'plato' }}{{ menu.items.length !== 1 ? 's' : '' }}
+              </span>
             </div>
             <div class="menu-actions">
               <p-button
@@ -101,7 +123,7 @@
   </div>
 }
 
-<!-- ══ EDITOR DE MENÚ ════════════════════════════════════════════════════════ -->
+<!-- ══ EDITOR ════════════════════════════════════════════════════════════════ -->
 @if (editorOpen()) {
   <div class="editor-page">
 
@@ -112,10 +134,10 @@
         <input
           pInputText
           [(ngModel)]="editorName"
-          placeholder="Nombre del menú (ej: Menú del lunes)"
+          [placeholder]="editorType() === 'daily' ? 'Ej: Menú del lunes' : editorType() === 'food' ? 'Ej: Carta de verano' : 'Ej: Carta de cócteles'"
           class="name-input" />
         <p-button
-          label="Guardar menú"
+          label="Guardar"
           icon="pi pi-check"
           [disabled]="!editorName.trim() || editorItems().length === 0"
           [loading]="saving()"
@@ -125,16 +147,25 @@
 
     <div class="editor-layout">
 
-      <!-- Catálogo -->
+      <!-- Catálogo (filtrado por tipo) -->
       <div class="catalog-panel">
         <div class="category-tabs">
-          @for (cat of categories(); track cat) {
+          @for (cat of editorCategories(); track cat) {
             <button
               class="cat-tab"
               [class.active]="selectedCategory() === cat"
               (click)="selectCategory(cat)">
               {{ cat }}
             </button>
+          }
+          @if (editorCategories().length === 0) {
+            <p class="no-cats-hint">
+              @if (editorType() === 'drinks') {
+                Marca al menos una categoría como "Bebidas" en la sección Categorías.
+              } @else {
+                No hay categorías de comida disponibles.
+              }
+            </p>
           }
         </div>
 
@@ -148,17 +179,20 @@
               }
             </button>
           }
+          @if (filteredProducts().length === 0 && editorCategories().length > 0) {
+            <p class="no-products-hint">No hay productos en esta categoría.</p>
+          }
         </div>
       </div>
 
-      <!-- Platos seleccionados -->
+      <!-- Seleccionados -->
       <div class="selected-panel">
-        <h3 class="selected-title">Platos del menú</h3>
+        <h3 class="selected-title">{{ selectedPanelTitle() }}</h3>
 
         @if (editorItems().length === 0) {
           <div class="selected-empty">
             <i class="pi pi-calendar-plus" style="font-size:2rem;color:#d1d5db"></i>
-            <p>Haz clic en los productos para agregarlos al menú</p>
+            <p>Haz clic en los productos para agregarlos</p>
           </div>
         }
 
@@ -181,8 +215,8 @@
 
         @if (editorItems().length > 0) {
           <div class="selected-footer">
-            <span>{{ editorItems().length }} plato{{ editorItems().length !== 1 ? 's' : '' }}</span>
-            <span>{{ editorItems().reduce((s,i) => s + i.quantity, 0) }} porciones totales</span>
+            <span>{{ editorItems().length }} ítem{{ editorItems().length !== 1 ? 's' : '' }}</span>
+            <span>{{ editorItems().reduce((s,i) => s + i.quantity, 0) }} unidades totales</span>
           </div>
         }
       </div>

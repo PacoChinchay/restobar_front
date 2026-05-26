@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { MenuModel, CreateMenuRequest } from '../../../core/domain/models/menu.model';
+import { MenuModel, CreateMenuRequest, MenuType } from '../../../core/domain/models/menu.model';
 import { MenuRepositoryPort } from '../../../core/domain/ports/menu.repository.port';
 import { API_BASE } from './api.base';
 
@@ -13,9 +13,9 @@ export class HttpMenuRepository extends MenuRepositoryPort {
     return firstValueFrom(this.http.get<MenuModel[]>(`${API_BASE}/api/Menus`));
   }
 
-  getActive(): Promise<MenuModel | null> {
+  getActive(type: MenuType = 'daily'): Promise<MenuModel | null> {
     return firstValueFrom(
-      this.http.get<MenuModel | null>(`${API_BASE}/api/Menus/active`, { observe: 'response' })
+      this.http.get<MenuModel | null>(`${API_BASE}/api/Menus/active`, { params: { type }, observe: 'response' })
     ).then(r => r.status === 204 ? null : r.body);
   }
 

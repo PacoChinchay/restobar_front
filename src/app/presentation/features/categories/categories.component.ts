@@ -4,6 +4,7 @@ import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { Divider } from 'primeng/divider';
+import { ToggleSwitch } from 'primeng/toggleswitch';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Category } from '../../../core/domain/models/category.model';
 import { GetCategoriesUseCase } from '../../../core/application/use-cases/get-categories.use-case';
@@ -14,7 +15,7 @@ import { DeleteCategoryUseCase } from '../../../core/application/use-cases/delet
 @Component({
   selector: 'app-categories',
   standalone: true,
-  imports: [Button, Dialog, InputText, Divider, FormsModule],
+  imports: [Button, Dialog, InputText, Divider, ToggleSwitch, FormsModule],
   templateUrl: './categories.component.html',
   styleUrl: './categories.component.scss',
 })
@@ -32,6 +33,7 @@ export class CategoriesComponent implements OnInit {
 
   dialogVisible = false;
   newName = '';
+  newIsDrink = false;
 
   get dialogTitle() {
     return this.editingCategory() ? 'Editar categoría' : 'Nueva categoría';
@@ -44,12 +46,14 @@ export class CategoriesComponent implements OnInit {
   openDialog() {
     this.editingCategory.set(null);
     this.newName = '';
+    this.newIsDrink = false;
     this.dialogVisible = true;
   }
 
   openEditDialog(category: Category) {
     this.editingCategory.set(category);
     this.newName = category.name;
+    this.newIsDrink = category.isDrink;
     this.dialogVisible = true;
   }
 
@@ -60,6 +64,7 @@ export class CategoriesComponent implements OnInit {
   resetForm() {
     this.editingCategory.set(null);
     this.newName = '';
+    this.newIsDrink = false;
   }
 
   confirmDelete(category: Category) {
@@ -105,14 +110,14 @@ export class CategoriesComponent implements OnInit {
     const editing = this.editingCategory();
     try {
       if (editing) {
-        const updated = await this.updateCategory.execute(editing.id, this.newName.trim());
+        const updated = await this.updateCategory.execute(editing.id, this.newName.trim(), this.newIsDrink);
         this.categories.update(list => list.map(c => c.id === updated.id ? updated : c));
         this.messageService.add({
           severity: 'success', summary: 'Categoría actualizada',
           detail: `"${updated.name}" actualizada correctamente.`, life: 3000,
         });
       } else {
-        const created = await this.createCategory.execute(this.newName.trim());
+        const created = await this.createCategory.execute(this.newName.trim(), this.newIsDrink);
         this.categories.update(list => [...list, created].sort((a, b) => a.name.localeCompare(b.name)));
         this.messageService.add({
           severity: 'success', summary: 'Categoría creada',
