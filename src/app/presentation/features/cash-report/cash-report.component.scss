@@ -2,35 +2,25 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-  max-width: 1100px;
 }
 
 .report-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
 .page-title {
-  font-size: var(--font-xl);
-  font-weight: 700;
-  color: #1f2937;
+  margin: 0;
+  font-size: var(--fs-2xl);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
 }
 
-// ── Weekly chart ──────────────────────────────────────────────────────────────
-.week-chart {
-  background: #fff;
-  border-radius: var(--radius);
-  padding: 20px 16px 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-  cursor: pointer;
-}
-
-:host ::ng-deep .week-chart-canvas canvas {
-  cursor: pointer;
-}
-
-// ── Date navigation ───────────────────────────────────────────────────────────
+/* ── Date navigation ──────────────────────────────────────────────────────── */
 .date-nav {
   display: flex;
   align-items: center;
@@ -46,29 +36,103 @@
 }
 
 .date-text {
-  font-size: 15px;
+  font-size: var(--fs-md);
   font-weight: 600;
-  color: #1f2937;
+  color: var(--ink);
   text-transform: capitalize;
 }
 
+/* Delta chip */
 .comparison {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   font-size: 12px;
   font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 20px;
+  padding: 3px 10px;
+  border-radius: var(--r-pill);
+  font-family: var(--font-mono);
 
-  i { font-size: 10px; }
-
-  &.up   { background: #dcfce7; color: #16a34a; }
-  &.down { background: #fee2e2; color: #dc2626; }
-  &.flat { background: #f3f4f6; color: #6b7280; }
+  &.up   { background: var(--ok-soft);      color: var(--ok); }
+  &.down { background: var(--danger-soft);  color: var(--danger); }
+  &.flat { background: var(--surface-2);    color: var(--muted); border: 1px solid var(--border); }
 }
 
-// ── Summary grid ──────────────────────────────────────────────────────────────
+/* ── Weekly chart ─────────────────────────────────────────────────────────── */
+.week-chart {
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  padding: 20px 22px 14px;
+  border: var(--card-border);
+  box-shadow: var(--card-shadow);
+  cursor: pointer;
+}
+
+.week-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 14px;
+}
+
+.week-chart-title {
+  margin: 0;
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.week-chart-sub {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+.week-bars {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+  align-items: end;
+}
+
+.bar-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--r-md);
+  transition: background var(--t-fast);
+
+  &:hover { background: var(--surface-2); }
+}
+
+.bar-value {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.bar-fill {
+  width: 100%;
+  border-radius: 6px 6px 2px 2px;
+  transition: background var(--t-fast);
+}
+
+.bar-label {
+  font-size: 11px;
+  text-transform: capitalize;
+}
+
+:host ::ng-deep .week-chart-canvas canvas {
+  cursor: pointer;
+}
+
+/* ── Summary grid ─────────────────────────────────────────────────────────── */
 .summary-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -76,89 +140,117 @@
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr 1fr;
-
     .summary-card:last-child { grid-column: 1 / -1; }
   }
 }
 
 .summary-card {
-  border-radius: var(--radius);
+  border-radius: var(--r-lg);
   padding: 16px 18px;
   border-left: 4px solid transparent;
+  border: var(--card-border);
+  border-left-width: 4px;
+  box-shadow: var(--card-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 
   .summary-label {
     font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 6px;
+    letter-spacing: 0.05em;
+    color: var(--muted);
   }
 
   .summary-value {
-    font-size: 22px;
+    font-family: var(--font-mono);
+    font-size: var(--fs-xl);
     font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    color: var(--ink);
   }
 
   &.efectivo {
-    background: var(--color-efectivo-bg);
-    border-color: var(--color-efectivo-border);
-    .summary-label { color: var(--color-efectivo-text); }
-    .summary-value { color: var(--color-efectivo-text); }
+    background: var(--pay-cash-soft);
+    border-color: var(--pay-cash);
+    .summary-label { color: var(--pay-cash); }
+    .summary-value { color: var(--pay-cash); }
   }
 
   &.yape {
-    background: var(--color-yape-bg);
-    border-color: var(--color-yape-border);
-    .summary-label { color: var(--color-yape-text); }
-    .summary-value { color: var(--color-yape-text); }
+    background: var(--pay-yape-soft);
+    border-color: var(--pay-yape);
+    .summary-label { color: var(--pay-yape); }
+    .summary-value { color: var(--pay-yape); }
   }
 
   &.plin {
-    background: var(--color-plin-bg);
-    border-color: var(--color-plin-border);
-    .summary-label { color: var(--color-plin-text); }
-    .summary-value { color: var(--color-plin-text); }
+    background: var(--pay-plin-soft);
+    border-color: var(--pay-plin);
+    .summary-label { color: var(--pay-plin); }
+    .summary-value { color: var(--pay-plin); }
   }
 
   &.total {
-    background: var(--brand-primary-bg);
-    border-color: var(--brand-primary);
-    .summary-label { color: var(--brand-primary-dark); }
-    .summary-value { color: var(--brand-primary); }
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    .summary-label { color: var(--accent-ink); }
+    .summary-value { color: var(--accent); font-size: var(--fs-2xl); }
   }
 }
 
+/* ── Section title ────────────────────────────────────────────────────────── */
 .section-title {
-  font-size: 15px;
+  font-size: var(--fs-lg);
   font-weight: 600;
-  color: #374151;
+  color: var(--ink);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  margin: 0 0 8px;
+  letter-spacing: -0.01em;
 }
 
 .sale-count {
-  font-size: 12px;
+  font-size: var(--fs-sm);
   font-weight: 500;
-  color: #9ca3af;
+  color: var(--muted);
+  font-family: var(--font-mono);
 }
 
-// ── Table overrides ───────────────────────────────────────────────────────────
+/* ── Table overrides ──────────────────────────────────────────────────────── */
 :host ::ng-deep {
   .p-datatable {
-    border-radius: var(--radius);
+    border-radius: var(--r-lg) !important;
     overflow: hidden;
-    font-size: 14px;
-    background: #fff;
+    font-size: var(--fs-md) !important;
+    background: var(--surface) !important;
+    border: var(--card-border) !important;
+    box-shadow: var(--card-shadow) !important;
 
-    th {
-      background: #f9fafb !important;
-      color: #6b7280 !important;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
+    .p-datatable-header {
+      background: var(--surface-2) !important;
+      border-bottom: 1px solid var(--border-soft) !important;
+      padding: 16px 22px !important;
     }
 
-    td { padding: 11px 14px !important; }
+    th {
+      background: var(--surface-2) !important;
+      color: var(--muted) !important;
+      font-size: 12px !important;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600 !important;
+      padding: 12px 22px !important;
+    }
+
+    td { padding: 14px 22px !important; font-size: var(--fs-md) !important; }
+
+    .p-datatable-tbody > tr {
+      border-bottom: 1px solid var(--border-soft) !important;
+      &:hover { background: var(--surface-2) !important; }
+    }
   }
 }

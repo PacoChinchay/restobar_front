@@ -1,71 +1,97 @@
-<div class="login-page">
-  <div class="login-card">
+<div class="login">
 
-    <div class="login-logo">
-      <i class="pi pi-star-fill logo-icon"></i>
-      <h1>Restobar</h1>
-      <p class="logo-sub">Sistema de ventas</p>
+  <!-- ── Left aside (desktop only) ─────────────────────────────────────── -->
+  <aside class="login-aside">
+    <div class="wordmark word-light">
+      <span class="mark">rb</span>
+      <span class="name">restobar<span class="dot">.</span></span>
     </div>
+    <div class="pitch">
+      Un sistema sobrio para tu restaurante.<br>
+      <em>Sin distracciones, sin clics de más.</em>
+    </div>
+    <div class="aside-meta">MVP · Lima</div>
+    <div class="ornament"></div>
+  </aside>
 
-    <!-- ── Paso 1: Selección de usuario ─────────────────────────────────── -->
-    @if (step() === 1) {
-      <h2 class="step-title">Selecciona tu usuario</h2>
+  <!-- ── Right panel ────────────────────────────────────────────────────── -->
+  <section class="login-panel">
+    <div class="panel-inner">
 
-      <div class="user-grid">
-        @for (user of users(); track user.id) {
-          <div
-            class="user-card"
-            [class.selected]="selectedUser()?.id === user.id"
-            (click)="selectUser(user)">
-            <div class="user-avatar">{{ user.initials }}</div>
-            <div class="user-name">{{ user.name }}</div>
-            <div class="user-role">{{ roleLabel(user.role) }}</div>
-          </div>
-        }
-      </div>
+      <!-- ── Paso 1: Selección de usuario ─────────────────────────────── -->
+      @if (step() === 1) {
+        <h2 class="panel-title">Buenas, ¿quién entra?</h2>
+        <p class="panel-sub">Elegí tu cuenta para continuar.</p>
 
-      <p-button
-        label="Continuar"
-        icon="pi pi-arrow-right"
-        iconPos="right"
-        styleClass="w-full"
-        [disabled]="!selectedUser()"
-        (onClick)="goToPin()"
-        pTooltip="Selecciona un usuario para continuar"
-        [tooltipDisabled]="!!selectedUser()" />
-    }
+        <div class="user-grid">
+          @for (user of users(); track user.id) {
+            <button
+              class="user-card"
+              [class.selected]="selectedUser()?.id === user.id"
+              (click)="selectUser(user)">
+              <div class="user-avatar">{{ user.initials }}</div>
+              <div>
+                <div class="user-name">{{ user.name }}</div>
+                <div class="user-role">{{ roleLabel(user.role) }}</div>
+              </div>
+            </button>
+          }
+        </div>
 
-    <!-- ── Paso 2: Ingreso de PIN ────────────────────────────────────────── -->
-    @if (step() === 2) {
-      <button class="back-btn" (click)="backToUsers()">
-        <i class="pi pi-arrow-left"></i> Volver
-      </button>
-
-      <h2 class="step-title">Hola, {{ selectedUser()?.name }}</h2>
-      <p class="pin-hint">Ingresa tu PIN de 4 dígitos</p>
-
-      <div class="pin-dots">
-        @for (i of [1, 2, 3, 4]; track i) {
-          <div class="pin-dot" [class.filled]="pin().length >= i"></div>
-        }
-      </div>
-
-      @if (error()) {
-        <p-message severity="error" [text]="error()" styleClass="pin-error" />
+        <button
+          class="btn-primary btn-full"
+          [disabled]="!selectedUser()"
+          (click)="goToPin()">
+          Continuar
+        </button>
       }
 
-      <div class="pin-keypad">
-        @for (key of keys; track $index) {
-          <button
-            class="key-btn"
-            [class.empty-key]="key === ''"
-            [disabled]="key === '' || checking()"
-            (click)="keyPress(key)">
-            {{ key }}
-          </button>
-        }
-      </div>
-    }
+      <!-- ── Paso 2: Ingreso de PIN ──────────────────────────────────── -->
+      @if (step() === 2) {
+        <h2 class="panel-title">Ingresá tu PIN</h2>
+        <p class="panel-sub">{{ selectedUser()?.name }} · {{ roleLabel(selectedUser()?.role ?? '') }}</p>
 
-  </div>
+        <div class="pin-card card">
+
+          <!-- Selected user row -->
+          <div class="selected-user">
+            <div class="user-avatar">{{ selectedUser()?.initials }}</div>
+            <div class="selected-user-info">
+              <span class="user-name">{{ selectedUser()?.name }}</span>
+              <span class="user-role">{{ roleLabel(selectedUser()?.role ?? '') }}</span>
+            </div>
+            <button class="change-btn" (click)="backToUsers()">Cambiar</button>
+          </div>
+
+          <!-- PIN dots -->
+          <div class="pin-dots" [class.err]="!!error()">
+            @for (i of [1, 2, 3, 4]; track i) {
+              <div class="pin-dot" [class.on]="pin().length >= i"></div>
+            }
+          </div>
+
+          @if (error()) {
+            <div class="pin-err">PIN incorrecto, probá de nuevo</div>
+          } @else {
+            <div class="pin-err"></div>
+          }
+
+          <!-- Keypad -->
+          <div class="pin-keypad">
+            @for (key of numKeys; track $index) {
+              <button class="key-btn" (click)="keyPress(key)" [disabled]="checking()">{{ key }}</button>
+            }
+            <button class="key-btn key-erase" (click)="keyPress('←')" [disabled]="checking()">
+              <i class="pi pi-delete-left"></i>
+            </button>
+            <button class="key-btn" (click)="keyPress('0')" [disabled]="checking()">0</button>
+            <button class="key-btn key-erase" (click)="backToUsers()">Volver</button>
+          </div>
+
+        </div>
+      }
+
+    </div>
+  </section>
+
 </div>

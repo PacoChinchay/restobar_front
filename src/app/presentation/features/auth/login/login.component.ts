@@ -1,8 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { Button } from 'primeng/button';
-import { Message } from 'primeng/message';
-import { Tooltip } from 'primeng/tooltip';
 import { User } from '../../../../core/domain/models/user.model';
 import { AuthPort } from '../../../../core/domain/ports/auth.port';
 import { AuthenticateUserUseCase } from '../../../../core/application/use-cases/authenticate-user.use-case';
@@ -11,7 +8,7 @@ import { AuthStore } from '../../../../core/application/auth.store';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [Button, Message, Tooltip],
+  imports: [],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
@@ -29,6 +26,7 @@ export class LoginComponent implements OnInit {
   readonly checking = signal(false);
 
   readonly keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', '←'];
+  readonly numKeys = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
   async ngOnInit() {
     this.users.set(await this.authPort.getUsers());

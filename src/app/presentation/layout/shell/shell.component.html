@@ -1,8 +1,74 @@
 <div class="shell">
+
+  <!-- ── Sidebar (desktop only) ──────────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="wordmark">
+        <span class="mark">rb</span>
+        <span class="name">restobar<span class="dot">.</span></span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+
+      <a routerLink="/dashboard" routerLinkActive="active" class="navlink">
+        <span class="icon"><i class="pi pi-home"></i></span>
+        <span>Inicio</span>
+      </a>
+
+      @if (['administrador','cajero','camarero','cocinero'].includes(currentUser()?.role ?? '')) {
+        <a routerLink="/orders" routerLinkActive="active" class="navlink">
+          <span class="icon"><i class="pi pi-receipt"></i></span>
+          <span>Comandas</span>
+        </a>
+      }
+
+      @if (['camarero','cocinero','administrador'].includes(currentUser()?.role ?? '')) {
+        <a routerLink="/carta" routerLinkActive="active" class="navlink">
+          <span class="icon"><i class="pi pi-shopping-cart"></i></span>
+          <span>Nueva comanda</span>
+        </a>
+      }
+
+      @if (['administrador','cajero'].includes(currentUser()?.role ?? '')) {
+        <a routerLink="/catalog" routerLinkActive="active" class="navlink">
+          <span class="icon"><i class="pi pi-list"></i></span>
+          <span>Catálogo</span>
+        </a>
+        <a routerLink="/cash-report" routerLinkActive="active" class="navlink">
+          <span class="icon"><i class="pi pi-chart-bar"></i></span>
+          <span>Arqueo</span>
+        </a>
+      }
+
+      @if (currentUser()?.role === 'administrador') {
+        <div class="nav-group-label">Administración</div>
+        <a routerLink="/menus" routerLinkActive="active" class="navlink">
+          <span class="icon"><i class="pi pi-calendar"></i></span>
+          <span>Menúes</span>
+        </a>
+        <a routerLink="/categories" routerLinkActive="active" class="navlink">
+          <span class="icon"><i class="pi pi-tags"></i></span>
+          <span>Categorías</span>
+        </a>
+        <a routerLink="/users" routerLinkActive="active" class="navlink">
+          <span class="icon"><i class="pi pi-users"></i></span>
+          <span>Usuarios</span>
+        </a>
+      }
+
+    </nav>
+  </aside>
+
+  <!-- ── Topbar ──────────────────────────────────────────────────────────── -->
   <header class="topbar">
+
+    <!-- Brand: only shown on mobile -->
     <div class="topbar-brand">
-      <i class="pi pi-star-fill brand-icon"></i>
-      <span class="brand-name">Restobar</span>
+      <div class="wordmark wordmark-sm">
+        <span class="mark">rb</span>
+        <span class="name">restobar<span class="dot">.</span></span>
+      </div>
     </div>
 
     <div class="topbar-clock">
@@ -10,106 +76,57 @@
       <span class="clock-date">{{ formattedDate() }}</span>
     </div>
 
-    <div class="topbar-user">
-      <div class="user-avatar">{{ currentUser()?.initials }}</div>
-      <span class="user-name">{{ currentUser()?.name }}</span>
-      <p-button
-        icon="pi pi-sign-out"
-        [text]="true"
-        severity="secondary"
-        (onClick)="confirmLogout()"
-        pTooltip="Cerrar sesión"
-        tooltipPosition="bottom" />
+    <div class="topbar-right">
+      <div class="user-pill">
+        <div class="user-avatar">{{ currentUser()?.initials }}</div>
+        <div class="user-meta">
+          <span class="user-first-name">{{ firstName() }}</span>
+          <span class="user-role-label">{{ currentUser()?.role }}</span>
+        </div>
+      </div>
+      <button class="topbar-iconbtn" (click)="confirmLogout()" title="Cerrar sesión" aria-label="Cerrar sesión">
+        <i class="pi pi-sign-out"></i>
+      </button>
     </div>
+
   </header>
 
-  <div class="shell-body">
-    <!-- Sidebar: visible solo en desktop -->
-    <aside class="sidebar">
-      <nav class="sidebar-nav">
-        <a routerLink="/dashboard" routerLinkActive="nav-active" class="nav-item">
-          <i class="pi pi-home"></i>
-          <span>Inicio</span>
-        </a>
+  <!-- ── Main content ────────────────────────────────────────────────────── -->
+  <main class="shell-content">
+    <router-outlet />
+  </main>
 
-        @if (['administrador','cajero','camarero','cocinero'].includes(currentUser()?.role ?? '')) {
-          <a routerLink="/orders" routerLinkActive="nav-active" class="nav-item">
-            <i class="pi pi-receipt"></i>
-            <span>Comandas</span>
-          </a>
-        }
-
-        @if (['camarero','cocinero'].includes(currentUser()?.role ?? '')) {
-          <a routerLink="/carta" routerLinkActive="nav-active" class="nav-item">
-            <i class="pi pi-book"></i>
-            <span>Carta / Menú</span>
-          </a>
-        }
-
-        @if (['administrador','cajero'].includes(currentUser()?.role ?? '')) {
-          <a routerLink="/catalog" routerLinkActive="nav-active" class="nav-item">
-            <i class="pi pi-list"></i>
-            <span>Catálogo</span>
-          </a>
-          <a routerLink="/cash-report" routerLinkActive="nav-active" class="nav-item">
-            <i class="pi pi-chart-bar"></i>
-            <span>Arqueo de caja</span>
-          </a>
-        }
-
-        @if (currentUser()?.role === 'administrador') {
-          <a routerLink="/menus" routerLinkActive="nav-active" class="nav-item">
-            <i class="pi pi-calendar"></i>
-            <span>Menúes</span>
-          </a>
-          <a routerLink="/categories" routerLinkActive="nav-active" class="nav-item">
-            <i class="pi pi-tags"></i>
-            <span>Categorías</span>
-          </a>
-          <a routerLink="/users" routerLinkActive="nav-active" class="nav-item">
-            <i class="pi pi-users"></i>
-            <span>Usuarios</span>
-          </a>
-        }
-      </nav>
-    </aside>
-
-    <main class="shell-content">
-      <router-outlet />
-    </main>
-  </div>
-
-  <!-- Bottom nav: visible solo en mobile -->
-  <nav class="bottom-nav">
-    <a routerLink="/dashboard" routerLinkActive="nav-active" class="nav-item">
-      <i class="pi pi-home"></i>
+  <!-- ── Bottom nav (mobile only) ───────────────────────────────────────── -->
+  <nav class="bottomnav">
+    <a routerLink="/dashboard" routerLinkActive="active" class="navlink">
+      <span class="icon"><i class="pi pi-home"></i></span>
       <span>Inicio</span>
     </a>
 
     @if (['administrador','cajero','camarero','cocinero'].includes(currentUser()?.role ?? '')) {
-      <a routerLink="/orders" routerLinkActive="nav-active" class="nav-item">
-        <i class="pi pi-receipt"></i>
+      <a routerLink="/orders" routerLinkActive="active" class="navlink">
+        <span class="icon"><i class="pi pi-receipt"></i></span>
         <span>Comandas</span>
       </a>
     }
 
-    @if (['camarero','cocinero'].includes(currentUser()?.role ?? '')) {
-      <a routerLink="/carta" routerLinkActive="nav-active" class="nav-item">
-        <i class="pi pi-book"></i>
+    @if (['camarero','cocinero','administrador'].includes(currentUser()?.role ?? '')) {
+      <a routerLink="/carta" routerLinkActive="active" class="navlink">
+        <span class="icon"><i class="pi pi-shopping-cart"></i></span>
         <span>Carta</span>
       </a>
     }
 
     @if (['administrador','cajero'].includes(currentUser()?.role ?? '')) {
-      <a routerLink="/cash-report" routerLinkActive="nav-active" class="nav-item">
-        <i class="pi pi-chart-bar"></i>
+      <a routerLink="/cash-report" routerLinkActive="active" class="navlink">
+        <span class="icon"><i class="pi pi-chart-bar"></i></span>
         <span>Arqueo</span>
       </a>
     }
 
     @if (currentUser()?.role === 'administrador') {
-      <a routerLink="/users" routerLinkActive="nav-active" class="nav-item">
-        <i class="pi pi-users"></i>
+      <a routerLink="/users" routerLinkActive="active" class="navlink">
+        <span class="icon"><i class="pi pi-users"></i></span>
         <span>Usuarios</span>
       </a>
     }

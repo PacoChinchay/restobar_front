@@ -1,176 +1,359 @@
-.login-page {
+/* ── Layout ──────────────────────────────────────────────────────────────────── */
+.login {
   min-height: 100dvh;
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  background: var(--paper);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    .login-aside { display: none; }
+  }
+}
+
+/* ── Left aside ──────────────────────────────────────────────────────────────── */
+.login-aside {
+  background: var(--ink);
+  color: var(--surface);
+  padding: 48px;
   display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.word-light {
+  .mark {
+    background: var(--surface);
+    color: var(--ink);
+  }
+  .name { color: var(--surface); }
+  .dot  { color: var(--accent); }
+}
+
+/* Wordmark in aside */
+.login-aside .wordmark {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  background: var(--brand-primary-bg);
-  padding: 16px;
-}
-
-.login-card {
-  width: 100%;
-  max-width: 400px;
-  background: #fff;
-  border-radius: 20px;
-  padding: 32px 24px 28px;
-  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.1);
-}
-
-// ── Logo ──────────────────────────────────────────────────────────────────
-.login-logo {
-  text-align: center;
-  margin-bottom: 28px;
-
-  .logo-icon {
-    font-size: 44px;
-    color: var(--brand-primary);
-  }
-
-  h1 {
-    font-size: 26px;
-    font-weight: 700;
-    margin: 8px 0 4px;
-    color: #1f2937;
-  }
-
-  .logo-sub {
-    font-size: 14px;
-    color: #6b7280;
-  }
-}
-
-.step-title {
-  font-size: 18px;
+  gap: 10px;
   font-weight: 600;
-  color: #374151;
-  margin-bottom: 18px;
+  font-size: var(--fs-lg);
+  letter-spacing: -0.02em;
+
+  .mark {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--ink);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    flex-shrink: 0;
+  }
+
+  .name {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 2px;
+    color: var(--surface);
+  }
+
+  .dot { color: var(--accent); }
 }
 
-// ── User grid ─────────────────────────────────────────────────────────────
+.pitch {
+  margin-top: auto;
+  font-size: var(--fs-3xl);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  max-width: 460px;
+  color: var(--surface);
+
+  em {
+    font-style: normal;
+    color: var(--accent);
+  }
+}
+
+.aside-meta {
+  margin-top: 24px;
+  font-size: var(--fs-sm);
+  color: rgba(255,255,255,0.45);
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ornament {
+  position: absolute;
+  right: -120px;
+  bottom: -120px;
+  width: 480px;
+  height: 480px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, var(--accent) 0%, transparent 60%);
+  opacity: 0.18;
+  pointer-events: none;
+}
+
+/* ── Right panel ─────────────────────────────────────────────────────────────── */
+.login-panel {
+  display: flex;
+  flex-direction: column;
+  padding: 48px;
+  align-items: stretch;
+  justify-content: center;
+
+  @media (max-width: 480px) { padding: 24px 16px; }
+}
+
+.panel-inner {
+  max-width: 520px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.panel-title {
+  font-size: var(--fs-2xl);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0 0 6px;
+  color: var(--ink);
+}
+
+.panel-sub {
+  color: var(--muted);
+  margin: 0 0 24px;
+  font-size: var(--fs-md);
+}
+
+/* ── User grid ───────────────────────────────────────────────────────────────── */
 .user-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, 1fr);
   gap: 12px;
   margin-bottom: 20px;
+
+  @media (max-width: 360px) { grid-template-columns: 1fr; }
 }
 
 .user-card {
-  border: 2px solid #e5e7eb;
-  border-radius: var(--radius);
-  padding: 18px 12px;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-lg);
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s;
+  text-align: left;
+  transition: border-color var(--t-fast), background var(--t-fast), transform var(--t-fast);
+  min-height: var(--tap);
+  width: 100%;
 
-  &:active { transform: scale(0.98); }
+  &:hover { border-color: var(--accent); background: var(--surface-2); }
+  &:active { transform: scale(0.99); }
 
   &.selected {
-    border-color: var(--brand-primary);
-    background: var(--brand-primary-bg);
+    border-color: var(--accent);
+    background: var(--accent-soft);
   }
 
   .user-avatar {
-    width: 56px;
-    height: 56px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
-    background: #f3f4f6;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
-    font-weight: 700;
-    margin: 0 auto 10px;
-    color: var(--brand-primary);
-  }
-
-  .user-name {
-    font-size: 15px;
     font-weight: 600;
-    color: #1f2937;
+    font-size: var(--fs-md);
+    flex-shrink: 0;
   }
 
-  .user-role {
-    font-size: 12px;
-    color: #6b7280;
-    margin-top: 3px;
-  }
+  .user-name { font-weight: 600; font-size: var(--fs-md); color: var(--ink); }
+  .user-role { font-size: var(--fs-sm); color: var(--muted); margin-top: 2px; }
 }
 
-// ── PIN step ──────────────────────────────────────────────────────────────
-.back-btn {
-  background: none;
-  border: none;
-  color: var(--brand-primary);
-  font-size: 15px;
-  cursor: pointer;
-  padding: 0;
-  margin-bottom: 16px;
+/* ── Primary full-width button ────────────────────────────────────────────────── */
+.btn-primary {
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  gap: 10px;
+  height: var(--tap);
+  padding: 0 22px;
+  border-radius: var(--r-md);
+  border: none;
+  background: var(--accent);
+  color: var(--accent-on);
+  font-size: var(--fs-md);
+  font-weight: 600;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background var(--t-fast), transform var(--t-fast);
+
+  &:hover:not(:disabled) { background: var(--accent-dark); }
+  &:active:not(:disabled) { transform: translateY(1px); }
+  &:disabled { opacity: 0.45; cursor: not-allowed; }
 }
 
-.pin-hint {
-  color: #6b7280;
-  font-size: 15px;
-  margin-bottom: 20px;
+.btn-full { width: 100%; }
+
+/* ── Card ─────────────────────────────────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  border: var(--card-border);
+  box-shadow: var(--card-shadow);
 }
 
+/* ── PIN card ────────────────────────────────────────────────────────────────── */
+.pin-card {
+  padding: 24px;
+  margin-top: 8px;
+}
+
+.selected-user {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  background: var(--surface-2);
+  border-radius: var(--r-md);
+  margin-bottom: 22px;
+
+  .user-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+}
+
+.selected-user-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.2;
+
+  .user-name { font-weight: 600; color: var(--ink); }
+  .user-role  { font-size: var(--fs-sm); color: var(--muted); text-transform: capitalize; }
+}
+
+.change-btn {
+  margin-left: auto;
+  font-size: var(--fs-sm);
+  color: var(--accent);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  padding: 4px 8px;
+  border-radius: var(--r-sm);
+
+  &:hover { background: var(--accent-soft); }
+}
+
+/* ── PIN dots ─────────────────────────────────────────────────────────────────── */
 .pin-dots {
   display: flex;
   justify-content: center;
-  gap: 18px;
-  margin-bottom: 16px;
+  gap: 14px;
+  margin: 8px 0 20px;
 
   .pin-dot {
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    border: 2.5px solid #d1d5db;
-    transition: background 0.12s, border-color 0.12s;
+    border: 2px solid var(--border-strong);
+    background: var(--surface);
+    transition: all var(--t-fast);
 
-    &.filled {
-      background: var(--brand-primary);
-      border-color: var(--brand-primary);
+    &.on {
+      background: var(--ink);
+      border-color: var(--ink);
     }
+  }
+
+  &.err {
+    .pin-dot { border-color: var(--danger); animation: shake 0.4s; }
   }
 }
 
-.pin-error {
-  margin-bottom: 12px;
-  width: 100%;
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25%       { transform: translateX(-6px); }
+  75%       { transform: translateX(6px); }
 }
 
-// ── Keypad ────────────────────────────────────────────────────────────────
+.pin-err {
+  color: var(--danger);
+  text-align: center;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  height: 20px;
+  margin: -8px 0 14px;
+}
+
+/* ── Keypad ───────────────────────────────────────────────────────────────────── */
 .pin-keypad {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
-  margin-top: 16px;
 }
 
 .key-btn {
-  height: 64px;
-  font-size: 24px;
+  height: 72px;
+  font-size: var(--fs-2xl);
   font-weight: 600;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  letter-spacing: -0.02em;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-md);
   cursor: pointer;
-  color: #1f2937;
-  transition: background 0.12s;
+  color: var(--ink);
+  transition: background var(--t-fast), border-color var(--t-fast), transform var(--t-fast);
 
-  &:not(.empty-key):active {
-    background: #e5e7eb;
+  &:hover:not(:disabled) {
+    background: var(--surface-2);
+    border-color: var(--border-strong);
   }
 
-  &.empty-key {
-    visibility: hidden;
-    cursor: default;
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+    background: var(--accent-soft);
   }
 
-  &:disabled:not(.empty-key) {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+.key-erase {
+  background: var(--surface-2);
+  font-family: var(--font-sans);
+  font-size: var(--fs-sm);
+  color: var(--muted);
+  letter-spacing: 0;
+
+  &:hover:not(:disabled) { background: var(--paper); }
 }

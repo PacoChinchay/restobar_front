@@ -1,89 +1,293 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @import "primeicons/primeicons.css";
 
+/* ============================================================
+   Restobar — Design System "Cobre"
+   ============================================================ */
+
 :root {
-  --brand-primary:      #E88C00;
-  --brand-primary-dark: #CF7B00;
-  --brand-primary-bg:   #FFF8EE;
+  /* ── Brand accent ── */
+  --accent:        oklch(0.62 0.12 50);   /* Cobre / copper */
+  --accent-dark:   oklch(0.52 0.13 48);
+  --accent-soft:   oklch(0.96 0.025 60);
+  --accent-ink:    oklch(0.32 0.10 48);
+  --accent-on:     #ffffff;
 
-  --color-efectivo-bg:     #EAF3DE;
-  --color-efectivo-text:   #3B6D11;
-  --color-efectivo-border: #C0DD97;
+  /* ── Warm paper neutrals ── */
+  --paper:         #F6F2EB;
+  --surface:       #FFFFFF;
+  --surface-2:     #FBF8F2;
+  --ink:           #181513;
+  --ink-2:         #3F3935;
+  --muted:         #807872;
+  --muted-2:       #A89F95;
+  --border:        #E5DDD0;
+  --border-strong: #D2C8B5;
+  --border-soft:   #EFE9DD;
 
-  --color-yape-bg:     #EEEDFE;
-  --color-yape-text:   #3C3489;
-  --color-yape-border: #CECBF6;
+  /* ── Semantic ── */
+  --ok:         #2F6A3F;
+  --ok-soft:    #E6EFE6;
+  --warn:       #B26A0E;
+  --danger:     #9F2B2B;
+  --danger-soft:#F4E5E3;
 
-  --color-plin-bg:     #E6F1FB;
-  --color-plin-text:   #0C447C;
-  --color-plin-border: #B5D4F4;
+  /* ── Payment tints ── */
+  --pay-cash:      #2F6A3F;
+  --pay-cash-soft: #E8EFE6;
+  --pay-yape:      #4A3FA1;
+  --pay-yape-soft: #ECEAF8;
+  --pay-plin:      #1F5E92;
+  --pay-plin-soft: #E6EEF6;
 
-  --font-base: 16px;
-  --font-lg:   18px;
-  --font-xl:   22px;
-  --btn-height: 40px;
-  --radius:    10px;
+  /* ── Shape ── */
+  --r-sm:   6px;
+  --r-md:   10px;
+  --r-lg:   14px;
+  --r-xl:   20px;
+  --r-pill: 999px;
+
+  /* ── Card style ── */
+  --card-shadow: 0 1px 0 rgba(24,21,19,0.04), 0 1px 2px rgba(24,21,19,0.04);
+  --card-border: 1px solid var(--border);
+
+  /* ── Sizing ── */
+  --tap:         52px;
+  --tap-sm:      44px;
+  --topbar-h:    64px;
+  --sidebar-w:   240px;
+  --bottomnav-h: 76px;
+
+  /* ── Type ── */
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, monospace;
+  --fs-xs:  13px;
+  --fs-sm:  15px;
+  --fs-md:  17px;
+  --fs-lg:  19px;
+  --fs-xl:  22px;
+  --fs-2xl: 28px;
+  --fs-3xl: 36px;
+
+  /* ── Motion ── */
+  --t-fast: 120ms cubic-bezier(.2,.6,.2,1);
+  --t:      200ms cubic-bezier(.2,.6,.2,1);
+
+  /* ── Backward-compat aliases (used by PrimeNG overrides below) ── */
+  --brand-primary:      var(--accent);
+  --brand-primary-dark: var(--accent-dark);
+  --brand-primary-bg:   var(--accent-soft);
+  --radius:             var(--r-md);
+
+  /* legacy payment badge tokens (mapped to new system) */
+  --color-efectivo-bg:     var(--pay-cash-soft);
+  --color-efectivo-text:   var(--pay-cash);
+  --color-efectivo-border: var(--pay-cash-soft);
+  --color-yape-bg:         var(--pay-yape-soft);
+  --color-yape-text:       var(--pay-yape);
+  --color-yape-border:     var(--pay-yape-soft);
+  --color-plin-bg:         var(--pay-plin-soft);
+  --color-plin-text:       var(--pay-plin);
+  --color-plin-border:     var(--pay-plin-soft);
+
+  /* legacy font tokens */
+  --font-base: var(--fs-md);
+  --font-lg:   var(--fs-lg);
+  --font-xl:   var(--fs-xl);
+  --btn-height: var(--tap);
 }
 
-*,
-::before,
-::after {
+@media (max-width: 768px) {
+  :root {
+    --tap: 56px;
+    --fs-md: 17px;
+  }
+}
+
+*, ::before, ::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-html,
-body {
+html, body {
   height: 100%;
-  font-size: var(--font-base);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: #f5f5f5;
-  color: #1f2937;
+  font-size: var(--fs-md);
+  font-family: var(--font-sans);
+  background: var(--paper);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
+/* ── Mono utility ── */
+.num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* ── PrimeNG global overrides ── */
 .p-button {
-  min-height: var(--btn-height);
-  font-size: var(--font-base) !important;
-  border-radius: var(--radius) !important;
+  min-height: var(--tap) !important;
+  font-size: var(--fs-md) !important;
+  border-radius: var(--r-md) !important;
+  font-family: var(--font-sans) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.005em !important;
+  transition: background var(--t-fast), border-color var(--t-fast), opacity var(--t-fast) !important;
 }
 
-// En mobile, botones más grandes para touch
-@media (max-width: 768px) {
-  :root {
-    --btn-height: 52px;
-    --font-base:  17px;
-    --font-lg:    19px;
-    --font-xl:    24px;
-  }
+.p-button:not(.p-button-text):not(.p-button-outlined):not(.p-button-secondary):not(.p-button-danger):not(.p-button-warn):not(.p-button-info):not(.p-button-success):not(.p-button-contrast) {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: var(--accent-on) !important;
+}
+.p-button:not(.p-button-text):not(.p-button-outlined):not(.p-button-secondary):not(.p-button-danger):not(.p-button-warn):not(.p-button-info):not(.p-button-success):not(.p-button-contrast):hover {
+  background: var(--accent-dark) !important;
+  border-color: var(--accent-dark) !important;
+}
 
-  .p-button {
-    font-size: var(--font-lg) !important;
+.p-button.p-button-outlined {
+  border-color: var(--border-strong) !important;
+  color: var(--ink) !important;
+  background: var(--surface) !important;
+}
+.p-button.p-button-outlined:hover {
+  background: var(--surface-2) !important;
+}
+
+.p-button.p-button-text {
+  background: transparent !important;
+  border-color: transparent !important;
+}
+
+.p-button.p-button-secondary:not(.p-button-text):not(.p-button-outlined) {
+  background: var(--surface-2) !important;
+  border-color: var(--border) !important;
+  color: var(--ink-2) !important;
+}
+
+/* Dialog */
+.p-dialog .p-dialog-header {
+  background: var(--surface) !important;
+  border-bottom: 1px solid var(--border-soft) !important;
+  padding: 20px 24px 16px !important;
+}
+.p-dialog .p-dialog-header .p-dialog-title {
+  font-size: var(--fs-xl) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.015em !important;
+  color: var(--ink) !important;
+}
+.p-dialog .p-dialog-content {
+  background: var(--surface) !important;
+  padding: 20px 24px !important;
+}
+.p-dialog .p-dialog-footer {
+  background: var(--surface-2) !important;
+  border-top: 1px solid var(--border-soft) !important;
+  padding: 14px 20px !important;
+}
+.p-dialog {
+  border-radius: var(--r-lg) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: 0 24px 48px -12px rgba(24,21,19,0.25) !important;
+  overflow: hidden !important;
+}
+.p-dialog-mask {
+  backdrop-filter: blur(4px) !important;
+}
+
+/* Toast */
+.p-toast .p-toast-message {
+  background: var(--ink) !important;
+  color: var(--surface) !important;
+  border-radius: var(--r-md) !important;
+  border: none !important;
+  box-shadow: 0 8px 24px -8px rgba(0,0,0,0.4) !important;
+}
+.p-toast .p-toast-message-text {
+  color: var(--surface) !important;
+}
+.p-toast .p-toast-summary {
+  font-weight: 600 !important;
+  font-size: var(--fs-sm) !important;
+}
+.p-toast .p-toast-icon-close {
+  color: var(--muted-2) !important;
+}
+
+/* ConfirmDialog */
+.p-confirm-dialog .p-confirm-dialog-message {
+  font-size: var(--fs-md) !important;
+}
+
+/* Input fields */
+input[pInputText],
+.p-inputtext {
+  height: var(--tap) !important;
+  padding: 0 14px !important;
+  border-radius: var(--r-md) !important;
+  border: 1.5px solid var(--border-strong) !important;
+  background: var(--surface) !important;
+  font-size: var(--fs-md) !important;
+  font-family: var(--font-sans) !important;
+  color: var(--ink) !important;
+  outline: none !important;
+  transition: border-color var(--t-fast), box-shadow var(--t-fast) !important;
+
+  &:focus {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 4px var(--accent-soft) !important;
   }
 }
 
-// Shared payment badge used in multiple views
+.p-select,
+.p-dropdown {
+  height: var(--tap) !important;
+  border-radius: var(--r-md) !important;
+  border: 1.5px solid var(--border-strong) !important;
+  background: var(--surface) !important;
+  font-size: var(--fs-md) !important;
+  font-family: var(--font-sans) !important;
+
+  &:focus, &.p-focus {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 4px var(--accent-soft) !important;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 10px;
+  border: 2px solid var(--paper);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--muted-2); }
+
+/* ── Shared payment badge ── */
 .payment-badge {
   display: inline-flex;
   align-items: center;
   padding: 3px 10px;
-  border-radius: 20px;
+  border-radius: var(--r-pill);
   font-size: 12px;
   font-weight: 600;
   white-space: nowrap;
 
   &.efectivo {
-    background: var(--color-efectivo-bg);
-    color: var(--color-efectivo-text);
-    border: 1px solid var(--color-efectivo-border);
+    background: var(--pay-cash-soft);
+    color: var(--pay-cash);
   }
   &.yape {
-    background: var(--color-yape-bg);
-    color: var(--color-yape-text);
-    border: 1px solid var(--color-yape-border);
+    background: var(--pay-yape-soft);
+    color: var(--pay-yape);
   }
   &.plin {
-    background: var(--color-plin-bg);
-    color: var(--color-plin-text);
-    border: 1px solid var(--color-plin-border);
+    background: var(--pay-plin-soft);
+    color: var(--pay-plin);
   }
 }

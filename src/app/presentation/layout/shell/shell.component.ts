@@ -1,16 +1,14 @@
 import { Component, computed, inject, OnDestroy, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { Button } from 'primeng/button';
 import { Toast } from 'primeng/toast';
 import { ConfirmDialog } from 'primeng/confirmdialog';
-import { Tooltip } from 'primeng/tooltip';
 import { ConfirmationService } from 'primeng/api';
 import { AuthStore } from '../../../core/application/auth.store';
 
 @Component({
   selector: 'app-shell',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, Button, Toast, ConfirmDialog, Tooltip],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, Toast, ConfirmDialog],
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',
 })
@@ -21,6 +19,11 @@ export class ShellComponent implements OnDestroy {
 
   readonly currentUser = this.authStore.currentUser;
   readonly currentTime = signal(new Date());
+
+  readonly firstName = computed(() => {
+    const name = this.currentUser()?.name ?? '';
+    return name.split(' ')[0];
+  });
 
   readonly formattedTime = computed(() =>
     this.currentTime().toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' }),
