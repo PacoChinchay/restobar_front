@@ -8,6 +8,7 @@ import { MenuModel, MenuItemModel, MenuType } from '../../../core/domain/models/
 import { ManageMenusUseCase } from '../../../core/application/use-cases/manage-menus.use-case';
 import { CreateOrderUseCase } from '../../../core/application/use-cases/create-order.use-case';
 import { StockHubService } from '../../../infrastructure/realtime/stock-hub.service';
+import { AuthStore } from '../../../core/application/auth.store';
 
 interface CartItem {
   productId: number;
@@ -36,6 +37,7 @@ export class CartaMenuComponent implements OnInit {
   private messageService = inject(MessageService);
   private stockHub = inject(StockHubService);
   private destroyRef = inject(DestroyRef);
+  private authStore = inject(AuthStore);
 
   readonly TAB_CONFIG = TAB_CONFIG;
 
@@ -192,6 +194,7 @@ export class CartaMenuComponent implements OnInit {
           unitPrice: i.unitPrice,
           quantity: i.quantity,
         })),
+        createdBy: this.authStore.currentUser()?.name,
       });
       this.messageService.add({
         severity: 'success',

@@ -10,6 +10,8 @@ import { PayOrderUseCase } from '../../../core/application/use-cases/pay-order.u
 import { CancelOrderUseCase } from '../../../core/application/use-cases/cancel-order.use-case';
 import { AuthStore } from '../../../core/application/auth.store';
 
+type OrderTab = 'mine' | 'all';
+
 @Component({
   selector: 'app-orders',
   standalone: true,
@@ -21,16 +23,27 @@ export class OrdersComponent implements OnInit {
   private getOpenOrders = inject(GetOpenOrdersUseCase);
   private payOrder = inject(PayOrderUseCase);
   private cancelOrder = inject(CancelOrderUseCase);
-  private authStore = inject(AuthStore);
+  readonly authStore = inject(AuthStore);
   private messageService = inject(MessageService);
   private confirmationService = inject(ConfirmationService);
   private router = inject(Router);
 
   readonly orders = signal<Order[]>([]);
   readonly loading = signal(false);
+  readonly activeTab = signal<OrderTab>('mine');
   readonly payingOrderId = signal<number | null>(null);
   readonly selectedPayment = signal<PaymentMethod | null>(null);
   readonly paying = signal(false);
+
+  readonly myOrders = computed(() => {
+    const name = this.authStore.currentUser()?.name;
+    if (!name) return this.orders();
+    return this.orders().filter(o => o.createdBy === name);
+  });
+
+  readonly displayedOrders = computed(() =>
+    this.activeTab() === 'mine' ? this.myOrders() : this.orders(),
+  );
 
   readonly payingOrder = computed(() =>
     this.orders().find(o => o.id === this.payingOrderId()) ?? null,
@@ -50,7 +63,7 @@ export class OrdersComponent implements OnInit {
   }
 
   goToNewOrder() {
-    this.router.navigate(['/pos']);
+    this.router.navigate(['/carta']);
   }
 
   editOrder(order: Order) {

@@ -18,11 +18,13 @@ export interface Order {
   createdAt: Date;
   paidAt?: Date;
   paymentMethod?: string;
+  createdBy?: string;
 }
 
 export interface CreateOrderRequest {
   tableNumber: number;
   items: { productId: number; productName: string; unitPrice: number; quantity: number }[];
+  createdBy?: string;
 }
 
 export interface PayOrderRequest {

@@ -15,6 +15,21 @@ function toDateParam(date: Date): string {
   return `${y}-${m}-${d}`;
 }
 
+function getMondayOfWeek(date: Date): Date {
+  const d = new Date(date);
+  const day = d.getDay(); // 0=Sun, 1=Mon...
+  d.setDate(d.getDate() - (day === 0 ? 6 : day - 1));
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+function getSundayOfWeek(date: Date): Date {
+  const mon = getMondayOfWeek(date);
+  const d = new Date(mon);
+  d.setDate(d.getDate() + 6);
+  return d;
+}
+
 @Component({
   selector: 'app-cash-report',
   standalone: true,
@@ -26,40 +41,54 @@ export class CashReportComponent implements OnInit {
   private getDailySummaryUseCase = inject(GetDailySummaryUseCase);
   private saleRepo = inject(SaleRepositoryPort);
 
+  // ── Week state (controls the chart) ──────────────────────────────────────
+  readonly weekSunday = signal<Date>(getSundayOfWeek(new Date()));
+  readonly weeklyData = signal<DailyTotal[]>([]);
+  readonly loadingChart = signal(false);
+
+  // ── Day state (controls the details) ─────────────────────────────────────
   readonly selectedDate = signal<Date>(new Date());
   readonly summary = signal<DailySummary | null>(null);
   readonly allSales = signal<Sale[]>([]);
-  readonly weeklyData = signal<DailyTotal[]>([]);
-  readonly loading = signal(false);
+  readonly loadingDetails = signal(false);
+
+  // ── Computed ──────────────────────────────────────────────────────────────
+  readonly isCurrentWeek = computed(() => {
+    const todaySun = getSundayOfWeek(new Date());
+    return toDateParam(todaySun) === toDateParam(this.weekSunday());
+  });
+
+  readonly weekLabel = computed(() => {
+    const sun = this.weekSunday();
+    const mon = new Date(sun);
+    mon.setDate(mon.getDate() - 6);
+    const fmt = (d: Date) =>
+      d.toLocaleDateString('es-PE', { day: 'numeric', month: 'short' }).replace('.', '');
+    return `${fmt(mon)} – ${fmt(sun)}`;
+  });
+
+  readonly formattedDate = computed(() =>
+    this.selectedDate().toLocaleDateString('es-PE', {
+      weekday: 'long', day: 'numeric', month: 'long',
+    }),
+  );
 
   readonly digital = computed(
     () => (this.summary()?.byPaymentMethod.yape ?? 0) + (this.summary()?.byPaymentMethod.plin ?? 0),
   );
 
-  readonly isToday = computed(() => {
-    const today = new Date();
-    const sel = this.selectedDate();
-    return (
-      sel.getFullYear() === today.getFullYear() &&
-      sel.getMonth() === today.getMonth() &&
-      sel.getDate() === today.getDate()
-    );
+  readonly weeklyAvg = computed(() => {
+    const data = this.weeklyData();
+    if (!data.length) return 0;
+    return data.reduce((s, d) => s + d.total, 0) / 7;
   });
 
-  readonly formattedDate = computed(() =>
-    this.selectedDate().toLocaleDateString('es-PE', {
-      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
-    }),
-  );
-
   readonly comparison = computed((): { delta: number; pct: number | null } | null => {
-    const data = this.weeklyData();
-    if (data.length < 2) return null;
-    const current = data[data.length - 1].total;
-    const previous = data[data.length - 2].total;
-    if (current === 0 && previous === 0) return null;
-    const delta = current - previous;
-    const pct = previous > 0 ? (delta / previous) * 100 : null;
+    const avg = this.weeklyAvg();
+    const dayTotal = this.summary()?.totalAmount ?? 0;
+    if (avg === 0 && dayTotal === 0) return null;
+    const delta = dayTotal - avg;
+    const pct = avg > 0 ? (delta / avg) * 100 : null;
     return { delta, pct };
   });
 
@@ -122,57 +151,78 @@ export class CashReportComponent implements OnInit {
     onClick: (_event: unknown, elements: any[]) => {
       if (elements.length > 0) {
         const day = this.weeklyData()[elements[0].index];
-        if (day) this.goToDate(day.date);
+        if (day) void this.selectDay(day.date);
       }
     },
   };
 
   async ngOnInit() {
-    await this.loadData(this.selectedDate());
+    const today = new Date();
+    await Promise.all([
+      this.loadWeekChart(getSundayOfWeek(today)),
+      this.loadDayDetails(today),
+    ]);
   }
 
-  async loadData(date: Date) {
-    this.loading.set(true);
+  async loadWeekChart(sunday: Date) {
+    this.loadingChart.set(true);
     try {
-      const [summary, sales, weekly] = await Promise.all([
-        this.getDailySummaryUseCase.execute(date),
-        this.saleRepo.getByDate(date),
-        this.getDailySummaryUseCase.getWeeklyTotals(date),
-      ]);
-      this.summary.set(summary);
-      this.allSales.set(sales);
-      this.weeklyData.set(weekly);
+      this.weeklyData.set(await this.getDailySummaryUseCase.getWeeklyTotals(sunday));
     } finally {
-      this.loading.set(false);
+      this.loadingChart.set(false);
     }
   }
 
-  prevDay() {
-    const d = new Date(this.selectedDate());
-    d.setDate(d.getDate() - 1);
-    this.selectedDate.set(d);
-    this.loadData(d);
+  async loadDayDetails(date: Date) {
+    this.loadingDetails.set(true);
+    try {
+      const [summary, sales] = await Promise.all([
+        this.getDailySummaryUseCase.execute(date),
+        this.saleRepo.getByDate(date),
+      ]);
+      this.summary.set(summary);
+      this.allSales.set(sales);
+    } finally {
+      this.loadingDetails.set(false);
+    }
   }
 
-  nextDay() {
-    if (this.isToday()) return;
-    const d = new Date(this.selectedDate());
-    d.setDate(d.getDate() + 1);
-    this.selectedDate.set(d);
-    this.loadData(d);
+  async prevWeek() {
+    if (this.loadingChart()) return;
+    const d = new Date(this.weekSunday());
+    d.setDate(d.getDate() - 7);
+    this.weekSunday.set(d);
+    const mon = new Date(d);
+    mon.setDate(mon.getDate() - 6);
+    this.selectedDate.set(mon);
+    await Promise.all([this.loadWeekChart(d), this.loadDayDetails(mon)]);
   }
 
-  goToToday() {
+  async nextWeek() {
+    if (this.isCurrentWeek() || this.loadingChart()) return;
+    const d = new Date(this.weekSunday());
+    d.setDate(d.getDate() + 7);
+    this.weekSunday.set(d);
+    const mon = new Date(d);
+    mon.setDate(mon.getDate() - 6);
+    this.selectedDate.set(mon);
+    await Promise.all([this.loadWeekChart(d), this.loadDayDetails(mon)]);
+  }
+
+  async goToCurrentWeek() {
     const today = new Date();
+    const sun = getSundayOfWeek(today);
+    this.weekSunday.set(sun);
     this.selectedDate.set(today);
-    this.loadData(today);
+    await Promise.all([this.loadWeekChart(sun), this.loadDayDetails(today)]);
   }
 
-  goToDate(dateStr: string) {
+  async selectDay(dateStr: string) {
+    if (this.loadingDetails()) return;
     const [y, m, d] = dateStr.split('-').map(Number);
     const date = new Date(y, m - 1, d);
     this.selectedDate.set(date);
-    this.loadData(date);
+    await this.loadDayDetails(date);
   }
 
   formatTime(date: Date): string {

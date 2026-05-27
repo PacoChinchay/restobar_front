@@ -2,11 +2,29 @@
 
   <!-- ── Header ─────────────────────────────────────────────────────────────── -->
   <div class="page-header">
-    <h2 class="page-title">Comandas activas</h2>
+    <h2 class="page-title">Comandas</h2>
     <p-button
       label="Nueva comanda"
       icon="pi pi-plus"
       (onClick)="goToNewOrder()" />
+  </div>
+
+  <!-- ── Tabs ───────────────────────────────────────────────────────────────── -->
+  <div class="orders-tabs">
+    <button
+      class="orders-tab"
+      [class.active]="activeTab() === 'mine'"
+      (click)="activeTab.set('mine')">
+      Mis comandas
+      <span class="tab-count">{{ myOrders().length }}</span>
+    </button>
+    <button
+      class="orders-tab"
+      [class.active]="activeTab() === 'all'"
+      (click)="activeTab.set('all')">
+      Todas
+      <span class="tab-count">{{ orders().length }}</span>
+    </button>
   </div>
 
   <!-- ── Loading ───────────────────────────────────────────────────────────── -->
@@ -17,26 +35,37 @@
   }
 
   <!-- ── Empty state ───────────────────────────────────────────────────────── -->
-  @if (!loading() && orders().length === 0) {
+  @if (!loading() && displayedOrders().length === 0) {
     <div class="empty-state">
       <i class="pi pi-inbox empty-icon"></i>
-      <p class="empty-title">No hay comandas abiertas</p>
+      <p class="empty-title">
+        @if (activeTab() === 'mine') {
+          No tienes comandas abiertas
+        } @else {
+          No hay comandas abiertas
+        }
+      </p>
       <p class="empty-sub">Crea una nueva comanda para comenzar a tomar pedidos.</p>
       <p-button label="Nueva comanda" icon="pi pi-plus" [outlined]="true" (onClick)="goToNewOrder()" />
     </div>
   }
 
   <!-- ── Order cards ───────────────────────────────────────────────────────── -->
-  @if (!loading() && orders().length > 0) {
+  @if (!loading() && displayedOrders().length > 0) {
     <div class="orders-grid">
-      @for (order of orders(); track order.id) {
+      @for (order of displayedOrders(); track order.id) {
         <div class="order-card">
 
           <!-- Normal view -->
           @if (payingOrderId() !== order.id) {
             <div class="card-header">
               <div class="table-badge">Mesa {{ order.tableNumber }}</div>
-              <span class="elapsed">{{ elapsed(order.createdAt) }}</span>
+              <div class="card-header-right">
+                @if (activeTab() === 'all' && order.createdBy) {
+                  <span class="creator-badge">{{ order.createdBy }}</span>
+                }
+                <span class="elapsed">{{ elapsed(order.createdAt) }}</span>
+              </div>
             </div>
 
             <ul class="items-list">
@@ -55,13 +84,6 @@
             </div>
 
             <div class="card-actions">
-              <p-button
-                label="Editar"
-                icon="pi pi-pencil"
-                [outlined]="true"
-                size="small"
-                severity="secondary"
-                (onClick)="editOrder(order)" />
               <p-button
                 label="Cobrar"
                 icon="pi pi-wallet"

@@ -20,15 +20,39 @@
   color: var(--ink);
 }
 
-/* ── Date navigation ──────────────────────────────────────────────────────── */
-.date-nav {
+/* ── Week navigation ──────────────────────────────────────────────────────── */
+.week-nav {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.date-display {
+.week-label-group {
   flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.week-label {
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--ink);
+  text-transform: capitalize;
+}
+
+.current-week-chip {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: var(--r-pill);
+  background: var(--ok-soft);
+  color: var(--ok);
+}
+
+/* ── Selected day header ──────────────────────────────────────────────────── */
+.day-header {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -40,6 +64,16 @@
   font-weight: 600;
   color: var(--ink);
   text-transform: capitalize;
+}
+
+/* ── Details loading ──────────────────────────────────────────────────────── */
+.details-loading, .chart-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  color: var(--muted);
+  font-size: var(--fs-xl);
 }
 
 /* Delta chip */
