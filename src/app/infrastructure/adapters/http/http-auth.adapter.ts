@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { catchError, firstValueFrom, of } from 'rxjs';
-import { User, UserRole } from '../../../core/domain/models/user.model';
+import { LoginResult, User, UserRole } from '../../../core/domain/models/user.model';
 import { AuthPort } from '../../../core/domain/ports/auth.port';
 import { API_BASE } from './api.base';
 
@@ -24,7 +24,7 @@ export class HttpAuthAdapter extends AuthPort {
     return dtos.map(mapUser);
   }
 
-  async validatePin(userId: string, pin: string): Promise<User | null> {
+  async validatePin(userId: string, pin: string): Promise<LoginResult | null> {
     const dto = await firstValueFrom(
       this.http.post<any>(`${API_BASE}/api/Auth/validate-pin`, { userId, pin }).pipe(
         catchError((err: HttpErrorResponse) => {
@@ -33,7 +33,8 @@ export class HttpAuthAdapter extends AuthPort {
         }),
       ),
     );
-    return dto ? mapUser(dto) : null;
+    if (!dto) return null;
+    return { user: mapUser(dto.user), token: dto.token as string };
   }
 
   async createUser(name: string, role: UserRole, pin: string): Promise<User> {

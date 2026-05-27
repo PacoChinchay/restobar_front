@@ -1,4 +1,5 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { Button } from 'primeng/button';
@@ -6,6 +7,7 @@ import { MessageService } from 'primeng/api';
 import { MenuModel, MenuItemModel, MenuType } from '../../../core/domain/models/menu.model';
 import { ManageMenusUseCase } from '../../../core/application/use-cases/manage-menus.use-case';
 import { CreateOrderUseCase } from '../../../core/application/use-cases/create-order.use-case';
+import { StockHubService } from '../../../infrastructure/realtime/stock-hub.service';
 
 interface CartItem {
   productId: number;
@@ -32,6 +34,8 @@ export class CartaMenuComponent implements OnInit {
   private createOrder = inject(CreateOrderUseCase);
   private router = inject(Router);
   private messageService = inject(MessageService);
+  private stockHub = inject(StockHubService);
+  private destroyRef = inject(DestroyRef);
 
   readonly TAB_CONFIG = TAB_CONFIG;
 
@@ -79,12 +83,31 @@ export class CartaMenuComponent implements OnInit {
         this.manageMenus.getActive('drinks' as MenuType),
       ]);
       this.menus.set({ food, daily, drinks });
-      // Auto-select first tab that has an active menu
       const firstActive = TAB_CONFIG.find(t => this.menus()[t.type] !== null);
       if (firstActive) this.activeTab.set(firstActive.type);
     } finally {
       this.loading.set(false);
     }
+
+    // Patch remaining quantities in real-time when another session confirms an order
+    this.stockHub.stockUpdates$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(updates => {
+        this.menus.update(menus => {
+          const next = { ...menus };
+          for (const type of ['food', 'daily', 'drinks'] as MenuType[]) {
+            if (!next[type]) continue;
+            next[type] = {
+              ...next[type]!,
+              items: next[type]!.items.map(item => {
+                const upd = updates.find(u => u.productId === item.productId);
+                return upd ? { ...item, remainingQuantity: upd.remainingQuantity } : item;
+              }),
+            };
+          }
+          return next;
+        });
+      });
   }
 
   selectTab(type: MenuType) {

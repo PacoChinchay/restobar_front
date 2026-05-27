@@ -1,7 +1,8 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { authInterceptor } from './infrastructure/http/auth.interceptor';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { providePrimeNG } from 'primeng/config';
 import { definePreset } from '@primeuix/styled';
@@ -51,7 +52,7 @@ export const appConfig: ApplicationConfig = {
       },
       ripple: true,
     }),
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([authInterceptor])),
     MessageService,
     ConfirmationService,
     { provide: ProductRepositoryPort,  useClass: HttpProductRepository  },

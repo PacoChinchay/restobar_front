@@ -16,7 +16,13 @@ export interface User {
   role: UserRole;
 }
 
+export interface LoginResult {
+  user: User;
+  token: string;
+}
+
 export interface AuthSession {
   user: User;
+  token: string;
   loginAt: Date;
 }

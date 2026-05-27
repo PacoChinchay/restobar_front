@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { User, UserRole } from '../../../core/domain/models/user.model';
+import { LoginResult, User, UserRole } from '../../../core/domain/models/user.model';
 import { AuthPort } from '../../../core/domain/ports/auth.port';
 
 const MOCK_PINS: Record<string, string> = { admin: '1234', cajero: '5678' };
@@ -13,9 +13,9 @@ const MOCK_USERS: User[] = [
 export class MockAuthAdapter extends AuthPort {
   async getUsers(): Promise<User[]> { return [...MOCK_USERS]; }
 
-  async validatePin(userId: string, pin: string): Promise<User | null> {
+  async validatePin(userId: string, pin: string): Promise<LoginResult | null> {
     const user = MOCK_USERS.find(u => u.id === userId);
-    return user && MOCK_PINS[userId] === pin ? user : null;
+    return user && MOCK_PINS[userId] === pin ? { user, token: 'mock-token' } : null;
   }
 
   async createUser(name: string, role: UserRole, _pin: string): Promise<User> {

@@ -68,9 +68,9 @@ export class LoginComponent implements OnInit {
   private async validatePin(pin: string) {
     this.checking.set(true);
     try {
-      const user = await this.authenticateUser.execute(this.selectedUser()!.id, pin);
-      if (user) {
-        this.authStore.login(user);
+      const result = await this.authenticateUser.execute(this.selectedUser()!.id, pin);
+      if (result) {
+        this.authStore.login(result.user, result.token);
         this.router.navigate(['/dashboard']);
       } else {
         this.error.set('PIN incorrecto. Intenta nuevamente.');
