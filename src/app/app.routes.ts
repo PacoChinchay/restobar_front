@@ -67,6 +67,12 @@ export const routes: Routes = [
         canActivate: [roleGuard('administrador', 'cajero')],
       },
       {
+        path: 'caja',
+        loadComponent: () =>
+          import('./presentation/features/caja/caja.component').then(m => m.CajaComponent),
+        canActivate: [roleGuard('administrador', 'cajero')],
+      },
+      {
         path: 'users',
         loadComponent: () =>
           import('./presentation/features/users/users.component').then(m => m.UsersComponent),

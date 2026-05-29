@@ -1,0 +1,162 @@
+<div class="caja-page">
+
+  <!-- ── Loading ───────────────────────────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="loading-state">
+      <i class="pi pi-spin pi-spinner"></i>
+      <span>Cargando caja…</span>
+    </div>
+  }
+
+  <!-- ── Sin sesión: abrir caja ─────────────────────────────────────────────── -->
+  @else if (!session()) {
+    <div class="empty-wrap">
+      <div class="open-card">
+        <div class="open-icon"><i class="pi pi-lock"></i></div>
+        <h2 class="open-title">Caja cerrada</h2>
+        <p class="open-sub">No hay sesión de caja para hoy.<br>Ingresá el fondo inicial para abrir.</p>
+        <div class="open-field">
+          <label class="field-label">Fondo inicial (S/)</label>
+          <input
+            type="number"
+            class="amount-input"
+            placeholder="0.00"
+            min="0"
+            step="0.50"
+            [value]="openAmount()"
+            (input)="openAmount.set($any($event.target).value)"
+            (keydown.enter)="openSession()" />
+        </div>
+        <button
+          class="btn-primary btn-full"
+          [disabled]="opening() || !openAmount() || +openAmount() <= 0"
+          (click)="openSession()">
+          @if (opening()) { <i class="pi pi-spin pi-spinner"></i> } @else { <i class="pi pi-unlock"></i> }
+          Abrir caja
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- ── Sesión activa ─────────────────────────────────────────────────────── -->
+  @else {
+    <!-- Header -->
+    <div class="caja-header">
+      <div>
+        <h1 class="caja-title">Caja del día</h1>
+        <p class="caja-sub">{{ formatDate(session()!.date) }} · Abierta por <strong>{{ session()!.openedBy }}</strong></p>
+      </div>
+    </div>
+
+    <!-- Balance card -->
+    <div class="balance-card">
+      <span class="balance-label">Saldo actual</span>
+      <span class="balance-amount">S/ {{ balance() | number:'1.2-2' }}</span>
+      <span class="balance-initial">Fondo inicial: S/ {{ session()!.initialAmount | number:'1.2-2' }}</span>
+    </div>
+
+    <!-- Add movement button / inline form -->
+    @if (!showForm()) {
+      <button class="btn-add-movement" (click)="toggleForm()">
+        <i class="pi pi-plus"></i>
+        Registrar movimiento
+      </button>
+    } @else {
+      <div class="movement-form">
+        <div class="form-header">
+          <span class="form-title">Nuevo movimiento</span>
+          <button class="close-btn" (click)="toggleForm()"><i class="pi pi-times"></i></button>
+        </div>
+
+        <!-- Type toggle -->
+        <div class="type-toggle">
+          <button
+            class="type-btn"
+            [class.type-ingreso]="formType() === 'ingreso'"
+            (click)="formType.set('ingreso')">
+            <i class="pi pi-arrow-down"></i> Ingreso
+          </button>
+          <button
+            class="type-btn"
+            [class.type-egreso]="formType() === 'egreso'"
+            (click)="formType.set('egreso')">
+            <i class="pi pi-arrow-up"></i> Egreso
+          </button>
+        </div>
+
+        <div class="form-fields">
+          <div class="field-group">
+            <label class="field-label">Monto (S/)</label>
+            <input
+              type="number"
+              class="amount-input"
+              placeholder="0.00"
+              min="0"
+              step="0.50"
+              [value]="formAmount()"
+              (input)="formAmount.set($any($event.target).value)" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Descripción</label>
+            <input
+              type="text"
+              class="desc-input"
+              placeholder="Ej: Pago de transporte"
+              maxlength="100"
+              [value]="formDescription()"
+              (input)="formDescription.set($any($event.target).value)"
+              (keydown.enter)="submitMovement()" />
+          </div>
+        </div>
+
+        <button
+          class="btn-primary btn-full"
+          [disabled]="submitting() || !formAmount() || +formAmount() <= 0 || !formDescription().trim()"
+          (click)="submitMovement()">
+          @if (submitting()) { <i class="pi pi-spin pi-spinner"></i> } @else { <i class="pi pi-check"></i> }
+          Guardar
+        </button>
+      </div>
+    }
+
+    <!-- Movements list -->
+    <div class="movements-section">
+      <h3 class="section-title">Movimientos</h3>
+
+      @if (session()!.movements.length === 0) {
+        <div class="no-movements">
+          <i class="pi pi-list"></i>
+          <span>Sin movimientos registrados aún</span>
+        </div>
+      }
+
+      <div class="movements-list">
+        <!-- Initial amount as first "row" -->
+        <div class="movement-row movement-initial">
+          <div class="mv-icon mv-icon-initial"><i class="pi pi-wallet"></i></div>
+          <div class="mv-info">
+            <span class="mv-desc">Fondo inicial</span>
+            <span class="mv-meta">{{ session()!.openedBy }} · {{ formatTime(session()!.openedAt) }}</span>
+          </div>
+          <span class="mv-amount mv-amount-ingreso">+ S/ {{ session()!.initialAmount | number:'1.2-2' }}</span>
+        </div>
+
+        @for (m of session()!.movements; track m.id) {
+          <div class="movement-row" [class.is-egreso]="m.movementType === 'egreso'">
+            <div class="mv-icon" [class.mv-icon-egreso]="m.movementType === 'egreso'" [class.mv-icon-ingreso]="m.movementType === 'ingreso'">
+              <i class="pi" [class.pi-arrow-down]="m.movementType === 'ingreso'" [class.pi-arrow-up]="m.movementType === 'egreso'"></i>
+            </div>
+            <div class="mv-info">
+              <span class="mv-desc">{{ m.description }}</span>
+              <span class="mv-meta">{{ m.createdBy }} · {{ formatTime(m.createdAt) }}</span>
+            </div>
+            <span class="mv-amount" [class.mv-amount-ingreso]="m.movementType === 'ingreso'" [class.mv-amount-egreso]="m.movementType === 'egreso'">
+              {{ m.movementType === 'ingreso' ? '+' : '-' }} S/ {{ m.amount | number:'1.2-2' }}
+            </span>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+</div>
