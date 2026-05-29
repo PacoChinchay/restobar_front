@@ -33,6 +33,7 @@ export class UsersComponent implements OnInit {
   formRole: UserRole = 'cajero';
   formPin = '';
   formPinConfirm = '';
+  formMonthlySalary: number | null = null;
 
   readonly roleOptions = ALL_ROLES.map(r => ({ label: ROLE_LABELS[r], value: r }));
 
@@ -52,6 +53,7 @@ export class UsersComponent implements OnInit {
     this.formRole = 'cajero';
     this.formPin = '';
     this.formPinConfirm = '';
+    this.formMonthlySalary = null;
     this.dialogVisible.set(true);
   }
 
@@ -61,6 +63,7 @@ export class UsersComponent implements OnInit {
     this.formRole = user.role;
     this.formPin = '';
     this.formPinConfirm = '';
+    this.formMonthlySalary = user.monthlySalary ?? null;
     this.dialogVisible.set(true);
   }
 
@@ -77,10 +80,10 @@ export class UsersComponent implements OnInit {
     this.saving.set(true);
     try {
       if (this.editingId) {
-        await this.useCase.update(this.editingId, this.formName.trim(), this.formRole, this.formPin || undefined);
+        await this.useCase.update(this.editingId, this.formName.trim(), this.formRole, this.formPin || undefined, this.formMonthlySalary);
         this.messageService.add({ severity: 'success', summary: 'Usuario actualizado', life: 3000 });
       } else {
-        await this.useCase.create(this.formName.trim(), this.formRole, this.formPin);
+        await this.useCase.create(this.formName.trim(), this.formRole, this.formPin, this.formMonthlySalary);
         this.messageService.add({ severity: 'success', summary: 'Usuario creado', life: 3000 });
       }
       this.dialogVisible.set(false);

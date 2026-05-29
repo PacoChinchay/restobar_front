@@ -1,0 +1,153 @@
+<div class="advances-page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Adelantos</h1>
+      <p class="page-sub">Control de adelantos de sueldo por empleado</p>
+    </div>
+  </div>
+
+  <!-- Week nav -->
+  <div class="week-nav">
+    <button class="nav-btn" (click)="prevWeek()"><i class="pi pi-chevron-left"></i></button>
+    <div class="week-label">
+      <span>{{ weekLabel() }}</span>
+      @if (!isCurrentWeek()) {
+        <button class="today-btn" (click)="goToCurrentWeek()">Semana actual</button>
+      }
+    </div>
+    <button class="nav-btn" [disabled]="isCurrentWeek()" (click)="nextWeek()">
+      <i class="pi pi-chevron-right"></i>
+    </button>
+  </div>
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="loading-state"><i class="pi pi-spin pi-spinner"></i></div>
+  }
+
+  <!-- Employee cards -->
+  @if (!loading()) {
+    <div class="employee-list">
+      @for (emp of summaries(); track emp.userId) {
+        <div class="emp-card" [class.expanded]="expandedId() === emp.userId">
+
+          <!-- Employee row -->
+          <div class="emp-row">
+            <div class="emp-avatar">{{ emp.name[0].toUpperCase() }}</div>
+            <div class="emp-info">
+              <span class="emp-name">{{ emp.name }}</span>
+              <span class="emp-role">{{ emp.role }}</span>
+            </div>
+            <div class="emp-salary">
+              @if (emp.weeklySalary > 0) {
+                <span class="salary-week">S/ {{ emp.weeklySalary | number:'1.2-2' }} / sem</span>
+              } @else {
+                <span class="salary-none">Sin sueldo</span>
+              }
+            </div>
+          </div>
+
+          <!-- Progress bar (only if salary set) -->
+          @if (emp.weeklySalary > 0) {
+            <div class="advance-progress">
+              <div class="progress-track">
+                <div
+                  class="progress-fill"
+                  [class.over-budget]="emp.advancedThisWeek > emp.weeklySalary"
+                  [style.width.%]="pct(emp)">
+                </div>
+              </div>
+              <div class="progress-labels">
+                <span [class.danger-text]="emp.advancedThisWeek > emp.weeklySalary">
+                  Adelantado: S/ {{ emp.advancedThisWeek | number:'1.2-2' }}
+                </span>
+                <span [class.danger-text]="emp.remaining < 0">
+                  Disponible: S/ {{ emp.remaining | number:'1.2-2' }}
+                </span>
+              </div>
+            </div>
+          } @else if (emp.advancedThisWeek > 0) {
+            <div class="advance-no-salary">
+              Adelantado esta semana: <strong>S/ {{ emp.advancedThisWeek | number:'1.2-2' }}</strong>
+            </div>
+          }
+
+          <!-- Week advances history -->
+          @if (emp.weekAdvances.length > 0) {
+            <div class="week-advances">
+              @for (adv of emp.weekAdvances; track adv.id) {
+                <div class="adv-item">
+                  <span class="adv-date">{{ formatDate(adv.date) }}</span>
+                  <span class="adv-amount">S/ {{ adv.amount | number:'1.2-2' }}</span>
+                  @if (adv.notes) { <span class="adv-notes">"{{ adv.notes }}"</span> }
+                  <span class="adv-by">{{ adv.registeredBy }} · {{ formatTime(adv.createdAt) }}</span>
+                </div>
+              }
+            </div>
+          }
+
+          <!-- Inline form -->
+          @if (expandedId() === emp.userId) {
+            <div class="adv-form" (click)="$event.stopPropagation()">
+              <div class="form-row">
+                <div class="field-group">
+                  <label class="field-label">Monto (S/)</label>
+                  <input
+                    type="number"
+                    class="form-input"
+                    placeholder="0.00"
+                    min="0"
+                    step="0.50"
+                    [value]="advAmount()"
+                    (input)="advAmount.set($any($event.target).value)" />
+                </div>
+                <div class="field-group field-grow">
+                  <label class="field-label">Nota (opcional)</label>
+                  <input
+                    type="text"
+                    class="form-input"
+                    placeholder="Ej: para medicamentos"
+                    maxlength="100"
+                    [value]="advNotes()"
+                    (input)="advNotes.set($any($event.target).value)"
+                    (keydown.enter)="submitAdvance(emp)" />
+                </div>
+              </div>
+              @if (emp.weeklySalary > 0 && +advAmount() > 0 && (emp.advancedThisWeek + +advAmount()) > emp.weeklySalary) {
+                <div class="over-budget-warn">
+                  <i class="pi pi-exclamation-triangle"></i>
+                  El adelanto supera el sueldo semanal (S/ {{ emp.weeklySalary | number:'1.2-2' }})
+                </div>
+              }
+              <div class="form-actions">
+                <button class="btn-cancel" (click)="toggleForm(emp.userId)">Cancelar</button>
+                <button
+                  class="btn-confirm"
+                  [disabled]="submitting() || !advAmount() || +advAmount() <= 0"
+                  (click)="submitAdvance(emp)">
+                  @if (submitting()) { <i class="pi pi-spin pi-spinner"></i> }
+                  Confirmar adelanto
+                </button>
+              </div>
+            </div>
+          }
+
+          <!-- Toggle button -->
+          @if (isCurrentWeek()) {
+            <button
+              class="btn-advance"
+              [class.active]="expandedId() === emp.userId"
+              (click)="toggleForm(emp.userId)">
+              <i class="pi" [class.pi-plus]="expandedId() !== emp.userId" [class.pi-minus]="expandedId() === emp.userId"></i>
+              {{ expandedId() === emp.userId ? 'Cancelar' : 'Registrar adelanto' }}
+            </button>
+          }
+
+        </div>
+      }
+    </div>
+  }
+
+</div>

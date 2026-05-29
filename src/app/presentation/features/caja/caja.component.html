@@ -1,5 +1,19 @@
 <div class="caja-page">
 
+  <!-- ── Date nav ──────────────────────────────────────────────────────────── -->
+  <div class="date-nav">
+    <button class="nav-btn" (click)="prevDay()"><i class="pi pi-chevron-left"></i></button>
+    <div class="date-label">
+      <span>{{ dateLabel() }}</span>
+      @if (!isToday()) {
+        <button class="today-btn" (click)="goToToday()">Hoy</button>
+      }
+    </div>
+    <button class="nav-btn" [disabled]="isToday()" (click)="nextDay()">
+      <i class="pi pi-chevron-right"></i>
+    </button>
+  </div>
+
   <!-- ── Loading ───────────────────────────────────────────────────────────── -->
   @if (loading()) {
     <div class="loading-state">
@@ -9,7 +23,7 @@
   }
 
   <!-- ── Sin sesión: abrir caja ─────────────────────────────────────────────── -->
-  @else if (!session()) {
+  @else if (!session() && isToday()) {
     <div class="empty-wrap">
       <div class="open-card">
         <div class="open-icon"><i class="pi pi-lock"></i></div>
@@ -38,6 +52,17 @@
     </div>
   }
 
+  <!-- ── Sin sesión en fecha pasada ───────────────────────────────────────── -->
+  @else if (!session() && !isToday()) {
+    <div class="empty-wrap">
+      <div class="open-card">
+        <div class="open-icon"><i class="pi pi-calendar-times"></i></div>
+        <h2 class="open-title">Sin registro</h2>
+        <p class="open-sub">No se abrió caja este día.</p>
+      </div>
+    </div>
+  }
+
   <!-- ── Sesión activa ─────────────────────────────────────────────────────── -->
   @else {
     <!-- Header -->
@@ -48,6 +73,7 @@
       </div>
     </div>
 
+
     <!-- Balance card -->
     <div class="balance-card">
       <span class="balance-label">Saldo actual</span>
@@ -55,13 +81,13 @@
       <span class="balance-initial">Fondo inicial: S/ {{ session()!.initialAmount | number:'1.2-2' }}</span>
     </div>
 
-    <!-- Add movement button / inline form -->
-    @if (!showForm()) {
+    <!-- Add movement button / inline form (solo hoy) -->
+    @if (isToday() && !showForm()) {
       <button class="btn-add-movement" (click)="toggleForm()">
         <i class="pi pi-plus"></i>
         Registrar movimiento
       </button>
-    } @else {
+    } @else if (isToday() && showForm()) {
       <div class="movement-form">
         <div class="form-header">
           <span class="form-title">Nuevo movimiento</span>

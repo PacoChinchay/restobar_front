@@ -79,6 +79,12 @@ export const routes: Routes = [
         canActivate: [adminGuard],
       },
       {
+        path: 'advances',
+        loadComponent: () =>
+          import('./presentation/features/advances/advances.component').then(m => m.AdvancesComponent),
+        canActivate: [adminGuard],
+      },
+      {
         path: 'waiter-report',
         loadComponent: () =>
           import('./presentation/features/waiter-report/waiter-report.component').then(m => m.WaiterReportComponent),

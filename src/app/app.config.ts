@@ -17,6 +17,7 @@ import { OrderRepositoryPort } from './core/domain/ports/order.repository.port';
 import { MenuRepositoryPort } from './core/domain/ports/menu.repository.port';
 import { WaiterReportPort } from './core/domain/ports/waiter-report.port';
 import { CashSessionPort } from './core/domain/ports/cash-session.port';
+import { SalaryAdvancePort } from './core/domain/ports/salary-advance.port';
 import { HttpProductRepository } from './infrastructure/adapters/http/http-product.repository';
 import { HttpSaleRepository } from './infrastructure/adapters/http/http-sale.repository';
 import { HttpAuthAdapter } from './infrastructure/adapters/http/http-auth.adapter';
@@ -25,6 +26,7 @@ import { HttpOrderRepository } from './infrastructure/adapters/http/http-order.r
 import { HttpMenuRepository } from './infrastructure/adapters/http/http-menu.repository';
 import { HttpWaiterReportAdapter } from './infrastructure/adapters/http/http-waiter-report.adapter';
 import { HttpCashSessionAdapter } from './infrastructure/adapters/http/http-cash-session.adapter';
+import { HttpSalaryAdvanceAdapter } from './infrastructure/adapters/http/http-salary-advance.adapter';
 
 const RestobarTheme = definePreset(Aura, {
   semantic: {
@@ -67,5 +69,6 @@ export const appConfig: ApplicationConfig = {
     { provide: MenuRepositoryPort,     useClass: HttpMenuRepository      },
     { provide: WaiterReportPort,       useClass: HttpWaiterReportAdapter  },
     { provide: CashSessionPort,        useClass: HttpCashSessionAdapter   },
+    { provide: SalaryAdvancePort,      useClass: HttpSalaryAdvanceAdapter },
   ],
 };

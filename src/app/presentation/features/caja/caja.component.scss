@@ -5,6 +5,62 @@
   max-width: 680px;
 }
 
+/* ── Date nav ─────────────────────────────────────────────────────────────── */
+.date-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface);
+  border: var(--card-border);
+  border-radius: var(--r-md);
+  padding: 10px 16px;
+  width: fit-content;
+
+  @media (max-width: 480px) { width: 100%; justify-content: space-between; }
+}
+
+.date-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--ink);
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.today-btn {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: none;
+  border-radius: var(--r-pill);
+  padding: 3px 10px;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: background var(--t-fast);
+  &:hover { background: oklch(from var(--accent-soft) calc(l - 0.03) c h); }
+}
+
+.nav-btn {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: transparent;
+  cursor: pointer;
+  color: var(--ink-2);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--t-fast);
+  &:hover:not(:disabled) { background: var(--surface-2); }
+  &:disabled { opacity: 0.35; cursor: not-allowed; }
+}
+
 /* ── Loading ──────────────────────────────────────────────────────────────── */
 .loading-state {
   display: flex;

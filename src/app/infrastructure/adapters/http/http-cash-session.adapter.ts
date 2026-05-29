@@ -15,6 +15,17 @@ export class HttpCashSessionAdapter extends CashSessionPort {
     );
   }
 
+  getByDate(date: Date): Promise<CashSession | null> {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return firstValueFrom(
+      this.http.get<CashSession | null>(`${API_BASE}/api/cash-session`, {
+        params: { date: `${y}-${m}-${d}` },
+      }),
+    );
+  }
+
   open(initialAmount: number, openedBy: string): Promise<CashSession> {
     return firstValueFrom(
       this.http.post<CashSession>(`${API_BASE}/api/cash-session`, { initialAmount, openedBy }),

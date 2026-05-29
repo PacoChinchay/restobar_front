@@ -76,6 +76,18 @@
     </div>
 
     <div class="field">
+      <label>Sueldo mensual (S/) <span class="field-hint">— opcional</span></label>
+      <input
+        pInputText
+        type="number"
+        [(ngModel)]="formMonthlySalary"
+        placeholder="Ej. 1200"
+        min="0"
+        step="50"
+        class="w-full" />
+    </div>
+
+    <div class="field">
       <label>PIN{{ editingId ? ' (dejar en blanco para no cambiar)' : '' }}</label>
       <p-password
         [(ngModel)]="formPin"

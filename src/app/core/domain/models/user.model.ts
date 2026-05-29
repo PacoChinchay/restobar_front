@@ -14,6 +14,7 @@ export interface User {
   name: string;
   initials: string;
   role: UserRole;
+  monthlySalary?: number | null;
 }
 
 export interface LoginResult {

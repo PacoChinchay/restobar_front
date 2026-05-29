@@ -1,0 +1,341 @@
+.advances-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 760px;
+}
+
+/* ── Header ───────────────────────────────────────────────────────────────── */
+.page-header { display: flex; align-items: flex-start; justify-content: space-between; }
+
+.page-title {
+  font-size: var(--fs-2xl);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin: 0 0 4px;
+}
+
+.page-sub { font-size: var(--fs-sm); color: var(--muted); margin: 0; }
+
+/* ── Week nav ─────────────────────────────────────────────────────────────── */
+.week-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface);
+  border: var(--card-border);
+  border-radius: var(--r-md);
+  padding: 10px 16px;
+  width: fit-content;
+
+  @media (max-width: 480px) { width: 100%; justify-content: space-between; }
+}
+
+.week-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.today-btn {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: none;
+  border-radius: var(--r-pill);
+  padding: 3px 10px;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: background var(--t-fast);
+
+  &:hover { background: oklch(from var(--accent-soft) calc(l - 0.03) c h); }
+}
+
+.nav-btn {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: transparent;
+  cursor: pointer;
+  color: var(--ink-2);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--t-fast);
+
+  &:hover:not(:disabled) { background: var(--surface-2); }
+  &:disabled { opacity: 0.35; cursor: not-allowed; }
+}
+
+/* ── Loading ──────────────────────────────────────────────────────────────── */
+.loading-state {
+  display: flex;
+  justify-content: center;
+  padding: 60px 0;
+  font-size: 1.6rem;
+  color: var(--muted);
+}
+
+/* ── Employee list ────────────────────────────────────────────────────────── */
+.employee-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.emp-card {
+  background: var(--surface);
+  border: var(--card-border);
+  border-radius: var(--r-lg);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: box-shadow var(--t-fast);
+
+  &.expanded { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+}
+
+.emp-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.emp-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: var(--fs-md);
+  flex-shrink: 0;
+}
+
+.emp-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.emp-name { font-size: var(--fs-md); font-weight: 600; color: var(--ink); }
+.emp-role { font-size: 12px; color: var(--muted); text-transform: capitalize; }
+
+.emp-salary { text-align: right; flex-shrink: 0; }
+
+.salary-week {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
+.salary-none {
+  font-size: 12px;
+  color: var(--muted-2);
+  font-style: italic;
+}
+
+/* ── Progress bar ─────────────────────────────────────────────────────────── */
+.advance-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.progress-track {
+  height: 8px;
+  background: var(--border-soft);
+  border-radius: var(--r-pill);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--ok);
+  border-radius: var(--r-pill);
+  transition: width 0.4s ease;
+
+  &.over-budget { background: var(--danger); }
+}
+
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.danger-text { color: var(--danger) !important; font-weight: 600; }
+
+.advance-no-salary {
+  font-size: var(--fs-sm);
+  color: var(--muted);
+
+  strong { color: var(--ink-2); font-family: var(--font-mono); }
+}
+
+/* ── Week advances list ───────────────────────────────────────────────────── */
+.week-advances {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 12px;
+  background: var(--surface-2);
+  border-radius: var(--r-md);
+  border: 1px solid var(--border-soft);
+}
+
+.adv-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: var(--fs-sm);
+  padding: 4px 0;
+}
+
+.adv-date { color: var(--muted); min-width: 90px; }
+.adv-amount { font-family: var(--font-mono); font-weight: 700; color: var(--danger); }
+.adv-notes { color: var(--ink-2); flex: 1; font-style: italic; }
+.adv-by { color: var(--muted-2); font-size: 12px; margin-left: auto; }
+
+/* ── Inline form ──────────────────────────────────────────────────────────── */
+.adv-form {
+  background: var(--surface-2);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--r-md);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+
+  @media (max-width: 480px) { flex-direction: column; }
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field-grow { flex: 1; }
+
+.field-label { font-size: 12px; font-weight: 600; color: var(--ink-2); }
+
+.form-input {
+  height: 44px;
+  padding: 0 12px;
+  border-radius: var(--r-md);
+  border: 1.5px solid var(--border-strong);
+  background: var(--surface);
+  font-size: var(--fs-md);
+  font-family: var(--font-sans);
+  color: var(--ink);
+  outline: none;
+  min-width: 110px;
+  transition: border-color var(--t-fast), box-shadow var(--t-fast);
+
+  &:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+}
+
+.over-budget-warn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--danger-soft);
+  border-radius: var(--r-md);
+  font-size: var(--fs-sm);
+  color: var(--danger);
+  font-weight: 500;
+
+  .pi { font-size: 14px; }
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.btn-cancel {
+  height: 40px;
+  padding: 0 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: transparent;
+  font-size: var(--fs-sm);
+  font-family: var(--font-sans);
+  color: var(--muted);
+  cursor: pointer;
+  transition: background var(--t-fast);
+
+  &:hover { background: var(--surface-2); }
+}
+
+.btn-confirm {
+  height: 40px;
+  padding: 0 18px;
+  border: none;
+  border-radius: var(--r-md);
+  background: var(--accent);
+  color: var(--accent-on);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background var(--t-fast);
+
+  &:hover:not(:disabled) { background: var(--accent-dark); }
+  &:disabled { opacity: 0.45; cursor: not-allowed; }
+}
+
+/* ── Advance toggle button ────────────────────────────────────────────────── */
+.btn-advance {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 16px;
+  border: 1.5px dashed var(--border-strong);
+  border-radius: var(--r-md);
+  background: transparent;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  font-family: var(--font-sans);
+  color: var(--ink-2);
+  cursor: pointer;
+  align-self: flex-start;
+  transition: all var(--t-fast);
+
+  &:hover, &.active {
+    border-color: var(--accent);
+    color: var(--accent-ink);
+    background: var(--accent-soft);
+  }
+}

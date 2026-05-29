@@ -12,6 +12,7 @@ function mapUser(dto: any): User {
     name: dto.name,
     initials: dto.initials,
     role: (dto.role as string).toLowerCase() as UserRole,
+    monthlySalary: dto.monthlySalary ?? null,
   };
 }
 
@@ -37,16 +38,16 @@ export class HttpAuthAdapter extends AuthPort {
     return { user: mapUser(dto.user), token: dto.token as string };
   }
 
-  async createUser(name: string, role: UserRole, pin: string): Promise<User> {
+  async createUser(name: string, role: UserRole, pin: string, monthlySalary?: number | null): Promise<User> {
     const dto = await firstValueFrom(
-      this.http.post<any>(`${API_BASE}/api/Users`, { name, role, pin }),
+      this.http.post<any>(`${API_BASE}/api/Users`, { name, role, pin, monthlySalary: monthlySalary ?? null }),
     );
     return mapUser(dto);
   }
 
-  async updateUser(id: string, name: string, role: UserRole, pin?: string): Promise<User> {
+  async updateUser(id: string, name: string, role: UserRole, pin?: string, monthlySalary?: number | null): Promise<User> {
     const dto = await firstValueFrom(
-      this.http.put<any>(`${API_BASE}/api/Users/${id}`, { name, role, pin: pin || null }),
+      this.http.put<any>(`${API_BASE}/api/Users/${id}`, { name, role, pin: pin || null, monthlySalary: monthlySalary ?? null }),
     );
     return mapUser(dto);
   }
