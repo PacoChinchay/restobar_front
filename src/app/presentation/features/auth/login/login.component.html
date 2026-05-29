@@ -23,23 +23,15 @@
         <h2 class="panel-title">Buenas, ¿quién entra?</h2>
         <p class="panel-sub">Elegí tu cuenta para continuar.</p>
 
-        <div class="user-grid">
+        <select class="user-select" (change)="selectUserById($event)">
+          <option value="">Seleccionar usuario…</option>
           @for (user of users(); track user.id) {
-            <button
-              class="user-card"
-              [class.selected]="selectedUser()?.id === user.id"
-              (click)="selectUser(user)">
-              <div class="user-avatar">{{ user.initials }}</div>
-              <div>
-                <div class="user-name">{{ user.name }}</div>
-                <div class="user-role">{{ roleLabel(user.role) }}</div>
-              </div>
-            </button>
+            <option [value]="user.id">{{ user.name }} · {{ roleLabel(user.role) }}</option>
           }
-        </div>
+        </select>
 
         <button
-          class="btn-primary btn-full"
+          class="btn-primary btn-full btn-mt"
           [disabled]="!selectedUser()"
           (click)="goToPin()">
           Continuar

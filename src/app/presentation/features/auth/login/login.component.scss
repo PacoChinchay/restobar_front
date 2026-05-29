@@ -4,6 +4,7 @@
   display: grid;
   grid-template-columns: 1fr 1.1fr;
   background: var(--paper);
+  overflow-x: hidden;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -110,6 +111,7 @@
   align-items: stretch;
   justify-content: center;
 
+  @media (max-width: 768px) { padding: 32px 24px; }
   @media (max-width: 480px) { padding: 24px 16px; }
 }
 
@@ -134,57 +136,34 @@
   color: var(--muted);
   margin: 0 0 24px;
   font-size: var(--fs-md);
+
+  @media (max-width: 480px) { margin-bottom: 14px; }
 }
 
-/* ── User grid ───────────────────────────────────────────────────────────────── */
-.user-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin-bottom: 20px;
-
-  @media (max-width: 360px) { grid-template-columns: 1fr; }
-}
-
-.user-card {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px;
-  background: var(--surface);
-  border: 1.5px solid var(--border);
-  border-radius: var(--r-lg);
-  cursor: pointer;
-  text-align: left;
-  transition: border-color var(--t-fast), background var(--t-fast), transform var(--t-fast);
-  min-height: var(--tap);
+/* ── User select ─────────────────────────────────────────────────────────────── */
+.user-select {
   width: 100%;
+  height: var(--tap);
+  padding: 0 14px;
+  border-radius: var(--r-md);
+  border: 1.5px solid var(--border-strong);
+  background: var(--surface);
+  font-size: var(--fs-md);
+  font-family: var(--font-sans);
+  color: var(--ink);
+  cursor: pointer;
+  appearance: auto;
+  margin-bottom: 16px;
+  transition: border-color var(--t-fast), box-shadow var(--t-fast);
 
-  &:hover { border-color: var(--accent); background: var(--surface-2); }
-  &:active { transform: scale(0.99); }
-
-  &.selected {
+  &:focus {
+    outline: none;
     border-color: var(--accent);
-    background: var(--accent-soft);
+    box-shadow: 0 0 0 4px var(--accent-soft);
   }
-
-  .user-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: var(--accent-soft);
-    color: var(--accent-ink);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    font-size: var(--fs-md);
-    flex-shrink: 0;
-  }
-
-  .user-name { font-weight: 600; font-size: var(--fs-md); color: var(--ink); }
-  .user-role { font-size: var(--fs-sm); color: var(--muted); margin-top: 2px; }
 }
+
+.btn-mt { margin-top: 0; }
 
 /* ── Primary full-width button ────────────────────────────────────────────────── */
 .btn-primary {
@@ -223,6 +202,8 @@
 .pin-card {
   padding: 24px;
   margin-top: 8px;
+
+  @media (max-width: 480px) { padding: 16px; margin-top: 4px; }
 }
 
 .selected-user {
@@ -233,6 +214,8 @@
   background: var(--surface-2);
   border-radius: var(--r-md);
   margin-bottom: 22px;
+
+  @media (max-width: 480px) { margin-bottom: 14px; }
 
   .user-avatar {
     width: 44px;
@@ -320,6 +303,8 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
+
+  @media (max-width: 480px) { gap: 8px; }
 }
 
 .key-btn {
@@ -334,6 +319,11 @@
   cursor: pointer;
   color: var(--ink);
   transition: background var(--t-fast), border-color var(--t-fast), transform var(--t-fast);
+
+  @media (max-width: 480px) {
+    height: 58px;
+    font-size: var(--fs-xl);
+  }
 
   &:hover:not(:disabled) {
     background: var(--surface-2);

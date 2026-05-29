@@ -36,6 +36,12 @@ export class LoginComponent implements OnInit {
     this.selectedUser.set(user);
   }
 
+  selectUserById(event: Event) {
+    const id = (event.target as HTMLSelectElement).value;
+    const user = this.users().find(u => u.id === id) ?? null;
+    this.selectedUser.set(user);
+  }
+
   goToPin() {
     this.step.set(2);
     this.pin.set('');
