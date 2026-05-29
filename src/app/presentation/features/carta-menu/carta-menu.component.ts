@@ -15,6 +15,7 @@ interface CartItem {
   productName: string;
   unitPrice: number;
   quantity: number;
+  menuType: MenuType;
 }
 
 const TAB_CONFIG: { type: MenuType; label: string; icon: string; empty: string }[] = [
@@ -62,6 +63,7 @@ export class CartaMenuComponent implements OnInit {
   readonly tableNumber = signal(1);
   readonly cart = signal<CartItem[]>([]);
   readonly saving = signal(false);
+  readonly cartOpen = signal(false);
 
   readonly cartTotal = computed(() =>
     this.cart().reduce((s, i) => s + i.unitPrice * i.quantity, 0),
@@ -128,6 +130,7 @@ export class CartaMenuComponent implements OnInit {
       });
       return;
     }
+    const wasEmpty = this.cart().length === 0;
     if (inCart > 0) {
       this.cart.update(items =>
         items.map(i => i.productId === item.productId ? { ...i, quantity: i.quantity + 1 } : i),
@@ -138,8 +141,10 @@ export class CartaMenuComponent implements OnInit {
         productName: item.productName,
         unitPrice: item.unitPrice,
         quantity: 1,
+        menuType: this.activeTab(),
       }]);
     }
+    if (wasEmpty) this.cartOpen.set(true);
   }
 
   increaseQty(cartItem: CartItem) {
@@ -193,6 +198,7 @@ export class CartaMenuComponent implements OnInit {
           productName: i.productName,
           unitPrice: i.unitPrice,
           quantity: i.quantity,
+          menuType: i.menuType,
         })),
         createdBy: this.authStore.currentUser()?.name,
       });

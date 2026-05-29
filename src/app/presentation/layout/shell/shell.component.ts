@@ -19,6 +19,7 @@ export class ShellComponent implements OnDestroy {
 
   readonly currentUser = this.authStore.currentUser;
   readonly currentTime = signal(new Date());
+  readonly adminMenuOpen = signal(false);
 
   readonly firstName = computed(() => {
     const name = this.currentUser()?.name ?? '';

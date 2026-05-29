@@ -55,6 +55,10 @@
           <span class="icon"><i class="pi pi-users"></i></span>
           <span>Usuarios</span>
         </a>
+        <a routerLink="/waiter-report" routerLinkActive="active" class="navlink">
+          <span class="icon"><i class="pi pi-chart-line"></i></span>
+          <span>Meseros</span>
+        </a>
       }
 
     </nav>
@@ -125,12 +129,46 @@
     }
 
     @if (currentUser()?.role === 'administrador') {
-      <a routerLink="/users" routerLinkActive="active" class="navlink">
-        <span class="icon"><i class="pi pi-users"></i></span>
-        <span>Usuarios</span>
+      <button class="navlink" [class.active]="adminMenuOpen()" (click)="adminMenuOpen.update(v => !v)">
+        <span class="icon"><i class="pi pi-th-large"></i></span>
+        <span>Más</span>
+      </button>
+    } @else if (currentUser()?.role === 'cajero') {
+      <a routerLink="/catalog" routerLinkActive="active" class="navlink">
+        <span class="icon"><i class="pi pi-list"></i></span>
+        <span>Catálogo</span>
       </a>
     }
   </nav>
+
+  <!-- ── Admin flyup menu (mobile only) ──────────────────────────────────── -->
+  @if (adminMenuOpen()) {
+    <div class="admin-flyup-backdrop" (click)="adminMenuOpen.set(false)">
+      <div class="admin-flyup-menu" (click)="$event.stopPropagation()">
+        <div class="flyup-title">Administración</div>
+        <a routerLink="/users" class="flyup-link" routerLinkActive="flyup-link-active" (click)="adminMenuOpen.set(false)">
+          <span class="flyup-icon"><i class="pi pi-users"></i></span>
+          <span>Usuarios</span>
+        </a>
+        <a routerLink="/waiter-report" class="flyup-link" routerLinkActive="flyup-link-active" (click)="adminMenuOpen.set(false)">
+          <span class="flyup-icon"><i class="pi pi-chart-line"></i></span>
+          <span>Meseros</span>
+        </a>
+        <a routerLink="/menus" class="flyup-link" routerLinkActive="flyup-link-active" (click)="adminMenuOpen.set(false)">
+          <span class="flyup-icon"><i class="pi pi-calendar"></i></span>
+          <span>Menúes</span>
+        </a>
+        <a routerLink="/categories" class="flyup-link" routerLinkActive="flyup-link-active" (click)="adminMenuOpen.set(false)">
+          <span class="flyup-icon"><i class="pi pi-tags"></i></span>
+          <span>Categorías</span>
+        </a>
+        <a routerLink="/catalog" class="flyup-link" routerLinkActive="flyup-link-active" (click)="adminMenuOpen.set(false)">
+          <span class="flyup-icon"><i class="pi pi-list"></i></span>
+          <span>Catálogo</span>
+        </a>
+      </div>
+    </div>
+  }
 
   <p-toast position="top-center" />
   <p-confirmDialog />

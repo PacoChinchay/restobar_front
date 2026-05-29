@@ -15,12 +15,14 @@ import { AuthPort } from './core/domain/ports/auth.port';
 import { CategoryRepositoryPort } from './core/domain/ports/category.repository.port';
 import { OrderRepositoryPort } from './core/domain/ports/order.repository.port';
 import { MenuRepositoryPort } from './core/domain/ports/menu.repository.port';
+import { WaiterReportPort } from './core/domain/ports/waiter-report.port';
 import { HttpProductRepository } from './infrastructure/adapters/http/http-product.repository';
 import { HttpSaleRepository } from './infrastructure/adapters/http/http-sale.repository';
 import { HttpAuthAdapter } from './infrastructure/adapters/http/http-auth.adapter';
 import { HttpCategoryRepository } from './infrastructure/adapters/http/http-category.repository';
 import { HttpOrderRepository } from './infrastructure/adapters/http/http-order.repository';
 import { HttpMenuRepository } from './infrastructure/adapters/http/http-menu.repository';
+import { HttpWaiterReportAdapter } from './infrastructure/adapters/http/http-waiter-report.adapter';
 
 const RestobarTheme = definePreset(Aura, {
   semantic: {
@@ -61,5 +63,6 @@ export const appConfig: ApplicationConfig = {
     { provide: CategoryRepositoryPort, useClass: HttpCategoryRepository  },
     { provide: OrderRepositoryPort,    useClass: HttpOrderRepository     },
     { provide: MenuRepositoryPort,     useClass: HttpMenuRepository      },
+    { provide: WaiterReportPort,       useClass: HttpWaiterReportAdapter  },
   ],
 };

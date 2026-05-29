@@ -72,6 +72,12 @@ export const routes: Routes = [
           import('./presentation/features/users/users.component').then(m => m.UsersComponent),
         canActivate: [adminGuard],
       },
+      {
+        path: 'waiter-report',
+        loadComponent: () =>
+          import('./presentation/features/waiter-report/waiter-report.component').then(m => m.WaiterReportComponent),
+        canActivate: [adminGuard],
+      },
     ],
   },
   { path: '**', redirectTo: '/login' },

@@ -69,7 +69,22 @@
       </div>
 
       <!-- ── Right: Cart ─────────────────────────────────────────────────────── -->
-      <div class="cart-panel">
+      <div class="cart-panel" [class.open]="cartOpen()">
+
+        <!-- Mobile handle — tap to expand / collapse -->
+        <div class="cart-handle" (click)="cartOpen.update(v => !v)">
+          <span class="handle-summary">
+            @if (cart().length === 0) {
+              <i class="pi pi-shopping-cart"></i> Carrito vacío
+            } @else {
+              <i class="pi pi-shopping-cart"></i>
+              {{ cart().length }} producto{{ cart().length !== 1 ? 's' : '' }}
+              &nbsp;·&nbsp;
+              <strong>S/ {{ cartTotal() | number:'1.2-2' }}</strong>
+            }
+          </span>
+          <i class="pi" [class.pi-chevron-up]="cartOpen()" [class.pi-chevron-down]="!cartOpen()"></i>
+        </div>
 
         <!-- Table selector -->
         <div class="table-selector">

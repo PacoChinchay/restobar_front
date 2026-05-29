@@ -218,6 +218,29 @@ html, body {
   color: var(--muted-2) !important;
 }
 
+@media (max-width: 768px) {
+  .p-toast {
+    width: calc(100vw - 32px) !important;
+  }
+
+  .p-toast .p-toast-message {
+    padding: 10px 12px !important;
+  }
+
+  .p-toast .p-toast-summary {
+    font-size: 13px !important;
+  }
+
+  .p-toast .p-toast-detail {
+    font-size: 12px !important;
+  }
+
+  .p-toast .p-toast-message-icon {
+    font-size: 16px !important;
+    width: 16px !important;
+  }
+}
+
 /* ConfirmDialog */
 .p-confirm-dialog .p-confirm-dialog-message {
   font-size: var(--fs-md) !important;

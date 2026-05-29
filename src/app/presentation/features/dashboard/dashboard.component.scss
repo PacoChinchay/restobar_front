@@ -136,9 +136,9 @@
 
 .sale-item {
   display: grid;
-  grid-template-columns: 1fr auto auto;
+  grid-template-columns: 1fr auto;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   padding: 14px 20px;
   border-bottom: 1px solid var(--border-soft);
 
@@ -168,13 +168,18 @@
   }
 
   .sale-right {
-    display: contents;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
 
     .sale-time {
       font-size: var(--fs-sm);
       color: var(--muted);
       font-family: var(--font-mono);
-      text-align: right;
+      white-space: nowrap;
+
+      @media (max-width: 480px) { display: none; }
     }
 
     .sale-total {
@@ -183,8 +188,9 @@
       color: var(--ink);
       font-family: var(--font-mono);
       letter-spacing: -0.02em;
+      white-space: nowrap;
+      min-width: 64px;
       text-align: right;
-      min-width: 80px;
     }
   }
 }

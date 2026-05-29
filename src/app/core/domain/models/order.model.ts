@@ -23,7 +23,7 @@ export interface Order {
 
 export interface CreateOrderRequest {
   tableNumber: number;
-  items: { productId: number; productName: string; unitPrice: number; quantity: number }[];
+  items: { productId: number; productName: string; unitPrice: number; quantity: number; menuType?: string }[];
   createdBy?: string;
 }
 
