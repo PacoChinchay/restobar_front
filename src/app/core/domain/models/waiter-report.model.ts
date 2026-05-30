@@ -15,3 +15,8 @@ export interface DailyOrderCount {
   date: string;
   orderCount: number;
 }
+
+export interface WaiterDaySummary {
+  date: string;
+  waiters: WaiterStats[];
+}

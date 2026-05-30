@@ -3,76 +3,180 @@
   <!-- ── Header ─────────────────────────────────────────────────────────────── -->
   <div class="report-header">
     <h2 class="page-title">Reporte de meseros</h2>
+    <div class="mode-tabs">
+      <button class="mode-tab" [class.active]="viewMode() === 'week'" (click)="switchMode('week')">Por semana</button>
+      <button class="mode-tab" [class.active]="viewMode() === 'day'"  (click)="switchMode('day')">Por día</button>
+    </div>
   </div>
 
-  <!-- ── Week navigation ───────────────────────────────────────────────────── -->
-  <div class="week-nav">
-    <p-button
-      icon="pi pi-chevron-left"
-      [text]="true"
-      [rounded]="true"
-      size="small"
-      (onClick)="prevWeek()"
-      [disabled]="loading()" />
+  <!-- ══════════════════ WEEKLY VIEW ══════════════════════════════════════════ -->
+  @if (viewMode() === 'week') {
 
-    <div class="week-label-group">
-      <span class="week-label">{{ weekLabel() }}</span>
-      @if (isCurrentWeek()) {
-        <span class="current-week-chip">Semana actual</span>
+    <!-- ── Week navigation ───────────────────────────────────────────────────── -->
+    <div class="week-nav">
+      <p-button
+        icon="pi pi-chevron-left"
+        [text]="true"
+        [rounded]="true"
+        size="small"
+        (onClick)="prevWeek()"
+        [disabled]="loading()" />
+
+      <div class="week-label-group">
+        <span class="week-label">{{ weekLabel() }}</span>
+        @if (isCurrentWeek()) {
+          <span class="current-week-chip">Semana actual</span>
+        }
+      </div>
+
+      <p-button
+        icon="pi pi-chevron-right"
+        [text]="true"
+        [rounded]="true"
+        size="small"
+        (onClick)="nextWeek()"
+        [disabled]="isCurrentWeek() || loading()" />
+
+      @if (!isCurrentWeek()) {
+        <p-button
+          label="Hoy"
+          [outlined]="true"
+          size="small"
+          (onClick)="goToCurrentWeek()"
+          [disabled]="loading()" />
       }
     </div>
 
-    <p-button
-      icon="pi pi-chevron-right"
-      [text]="true"
-      [rounded]="true"
-      size="small"
-      (onClick)="nextWeek()"
-      [disabled]="isCurrentWeek() || loading()" />
+    <!-- ── Chart ─────────────────────────────────────────────────────────────── -->
+    <div class="week-chart">
+      @if (loading()) {
+        <div class="chart-loading">
+          <i class="pi pi-spin pi-spinner"></i>
+        </div>
+      } @else {
+        <p-chart
+          type="bar"
+          [data]="chartData()"
+          [options]="chartOptions"
+          height="160px" />
+      }
+    </div>
 
-    @if (!isCurrentWeek()) {
-      <p-button
-        label="Hoy"
-        [outlined]="true"
-        size="small"
-        (onClick)="goToCurrentWeek()"
-        [disabled]="loading()" />
+    <!-- ── Waiters ───────────────────────────────────────────────────────────── -->
+    @if (!loading()) {
+
+      @if (waiters().length === 0) {
+        <div class="empty-state">
+          <i class="pi pi-users empty-icon"></i>
+          <p class="empty-title">Sin actividad esta semana</p>
+          <p class="empty-sub">No hay comandas registradas para este período.</p>
+        </div>
+      } @else {
+
+        <div class="section-header">
+          <h3 class="section-title">Rendimiento semanal</h3>
+          <span class="section-count">{{ totalOrdersWeek() }} comanda{{ totalOrdersWeek() !== 1 ? 's' : '' }} en total</span>
+        </div>
+
+        <div class="waiters-grid">
+          @for (waiter of waiters(); track waiter.name; let i = $index) {
+            <div class="waiter-card" [class]="rankClass(i)">
+
+              <div class="waiter-card-header">
+                <div class="waiter-avatar">{{ initials(waiter.name) }}</div>
+                <div class="waiter-info">
+                  <span class="waiter-name">{{ waiter.name }}</span>
+                  <span class="waiter-rank" [class]="rankClass(i)">{{ rankLabel(i) }}</span>
+                </div>
+              </div>
+
+              <div class="stats-grid">
+                <div class="stat-cell">
+                  <span class="stat-value">{{ waiter.totalOrders }}</span>
+                  <span class="stat-label">Comandas</span>
+                </div>
+                <div class="stat-cell">
+                  <span class="stat-value">{{ waiter.totalTables }}</span>
+                  <span class="stat-label">Mesas</span>
+                </div>
+                <div class="stat-cell">
+                  <span class="stat-value money">S/ {{ waiter.totalRevenue | number:'1.0-0' }}</span>
+                  <span class="stat-label">Ingresos</span>
+                </div>
+                <div class="stat-cell">
+                  <span class="stat-value money">S/ {{ waiter.avgOrderValue | number:'1.0-0' }}</span>
+                  <span class="stat-label">Promedio</span>
+                </div>
+              </div>
+
+            </div>
+          }
+        </div>
+
+      }
+
     }
-  </div>
 
-  <!-- ── Chart ─────────────────────────────────────────────────────────────── -->
-  <div class="week-chart">
+  }
+
+  <!-- ══════════════════ DAILY VIEW ═══════════════════════════════════════════ -->
+  @if (viewMode() === 'day') {
+
+    <!-- ── Day navigation ────────────────────────────────────────────────────── -->
+    <div class="week-nav">
+      <p-button
+        icon="pi pi-chevron-left"
+        [text]="true"
+        [rounded]="true"
+        size="small"
+        (onClick)="prevDay()"
+        [disabled]="loading()" />
+
+      <div class="week-label-group">
+        <span class="week-label">{{ dayLabel() }}</span>
+        @if (isToday()) {
+          <span class="current-week-chip">Hoy</span>
+        }
+      </div>
+
+      <p-button
+        icon="pi pi-chevron-right"
+        [text]="true"
+        [rounded]="true"
+        size="small"
+        (onClick)="nextDay()"
+        [disabled]="isToday() || loading()" />
+
+      @if (!isToday()) {
+        <p-button
+          label="Hoy"
+          [outlined]="true"
+          size="small"
+          (onClick)="goToToday()"
+          [disabled]="loading()" />
+      }
+    </div>
+
+    <!-- ── Day waiters ────────────────────────────────────────────────────────── -->
     @if (loading()) {
       <div class="chart-loading">
         <i class="pi pi-spin pi-spinner"></i>
       </div>
-    } @else {
-      <p-chart
-        type="bar"
-        [data]="chartData()"
-        [options]="chartOptions"
-        height="160px" />
-    }
-  </div>
-
-  <!-- ── Waiters ───────────────────────────────────────────────────────────── -->
-  @if (!loading()) {
-
-    @if (waiters().length === 0) {
+    } @else if (dayWaiters().length === 0) {
       <div class="empty-state">
         <i class="pi pi-users empty-icon"></i>
-        <p class="empty-title">Sin actividad esta semana</p>
-        <p class="empty-sub">No hay comandas registradas para este período.</p>
+        <p class="empty-title">Sin actividad este día</p>
+        <p class="empty-sub">No hay comandas registradas para esta fecha.</p>
       </div>
     } @else {
 
       <div class="section-header">
-        <h3 class="section-title">Rendimiento semanal</h3>
-        <span class="section-count">{{ totalOrdersWeek() }} comanda{{ totalOrdersWeek() !== 1 ? 's' : '' }} en total</span>
+        <h3 class="section-title">Rendimiento del día</h3>
+        <span class="section-count">{{ totalOrdersDay() }} comanda{{ totalOrdersDay() !== 1 ? 's' : '' }} en total</span>
       </div>
 
       <div class="waiters-grid">
-        @for (waiter of waiters(); track waiter.name; let i = $index) {
+        @for (waiter of dayWaiters(); track waiter.name; let i = $index) {
           <div class="waiter-card" [class]="rankClass(i)">
 
             <div class="waiter-card-header">

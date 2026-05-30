@@ -12,6 +12,38 @@
   gap: 16px;
 }
 
+/* ── Mode tabs ────────────────────────────────────────────────────────────── */
+.mode-tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--surface-2);
+  border-radius: var(--r-pill);
+  padding: 3px;
+  border: 1px solid var(--border-soft);
+}
+
+.mode-tab {
+  padding: 5px 16px;
+  border-radius: var(--r-pill);
+  border: none;
+  background: transparent;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+
+  &.active {
+    background: var(--surface);
+    color: var(--ink);
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+  }
+
+  &:not(.active):hover {
+    color: var(--ink-2);
+  }
+}
+
 .page-title {
   margin: 0;
   font-size: var(--fs-2xl);

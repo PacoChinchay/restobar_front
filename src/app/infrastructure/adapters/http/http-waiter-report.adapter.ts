@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { WaiterWeekSummary } from '../../../core/domain/models/waiter-report.model';
+import { WaiterDaySummary, WaiterWeekSummary } from '../../../core/domain/models/waiter-report.model';
 import { WaiterReportPort } from '../../../core/domain/ports/waiter-report.port';
 import { API_BASE } from './api.base';
 
@@ -20,6 +20,14 @@ export class HttpWaiterReportAdapter extends WaiterReportPort {
     return firstValueFrom(
       this.http.get<WaiterWeekSummary>(`${API_BASE}/api/reports/waiters/weekly`, {
         params: { endDate: toDateParam(endDate) },
+      }),
+    );
+  }
+
+  getDailyStats(date: Date): Promise<WaiterDaySummary> {
+    return firstValueFrom(
+      this.http.get<WaiterDaySummary>(`${API_BASE}/api/reports/waiters/daily`, {
+        params: { date: toDateParam(date) },
       }),
     );
   }

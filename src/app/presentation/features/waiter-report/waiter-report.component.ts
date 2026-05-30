@@ -2,7 +2,7 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { Button } from 'primeng/button';
 import { ChartModule } from 'primeng/chart';
-import { WaiterStats, WaiterWeekSummary } from '../../../core/domain/models/waiter-report.model';
+import { WaiterDaySummary, WaiterStats, WaiterWeekSummary } from '../../../core/domain/models/waiter-report.model';
 import { GetWaiterReportUseCase } from '../../../core/application/use-cases/get-waiter-report.use-case';
 
 function toDateParam(date: Date): string {
@@ -27,6 +27,12 @@ function getSundayOfWeek(date: Date): Date {
   return d;
 }
 
+function today(): Date {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
 @Component({
   selector: 'app-waiter-report',
   standalone: true,
@@ -37,9 +43,12 @@ function getSundayOfWeek(date: Date): Date {
 export class WaiterReportComponent implements OnInit {
   private useCase = inject(GetWaiterReportUseCase);
 
+  // ── mode ────────────────────────────────────────────────────────────────────
+  readonly viewMode = signal<'week' | 'day'>('week');
+
+  // ── week state ───────────────────────────────────────────────────────────────
   readonly weekSunday = signal<Date>(getSundayOfWeek(new Date()));
   readonly weekData   = signal<WaiterWeekSummary | null>(null);
-  readonly loading    = signal(false);
 
   readonly isCurrentWeek = computed(() => {
     const todaySun = getSundayOfWeek(new Date());
@@ -65,10 +74,10 @@ export class WaiterReportComponent implements OnInit {
     const data = this.weekData()?.dailyTotals ?? [];
     return {
       labels: data.map(d => {
-        const [y, m, day] = d.date.split('-').map(Number);
-        const date = new Date(y, m - 1, day);
+        const [y, mo, dy] = d.date.split('-').map(Number);
+        const date = new Date(y, mo - 1, dy);
         const weekday = date.toLocaleDateString('es-PE', { weekday: 'short' }).replace('.', '');
-        return [`${weekday}`, `${day}`];
+        return [`${weekday}`, `${dy}`];
       }),
       datasets: [{
         data: data.map(d => d.orderCount),
@@ -114,11 +123,44 @@ export class WaiterReportComponent implements OnInit {
     },
   };
 
+  // ── day state ────────────────────────────────────────────────────────────────
+  readonly viewDate = signal<Date>(today());
+  readonly dayData  = signal<WaiterDaySummary | null>(null);
+
+  readonly isToday = computed(() =>
+    toDateParam(this.viewDate()) === toDateParam(today()),
+  );
+
+  readonly dayLabel = computed(() => {
+    const d = this.viewDate();
+    return d.toLocaleDateString('es-PE', { weekday: 'long', day: 'numeric', month: 'long' });
+  });
+
+  readonly dayWaiters = computed(() => this.dayData()?.waiters ?? []);
+
+  readonly totalOrdersDay = computed(() =>
+    this.dayWaiters().reduce((s, w) => s + w.totalOrders, 0),
+  );
+
+  // ── shared ───────────────────────────────────────────────────────────────────
+  readonly loading = signal(false);
+
   async ngOnInit() {
-    await this.loadData(this.weekSunday());
+    await this.loadWeek(this.weekSunday());
   }
 
-  async loadData(sunday: Date) {
+  async switchMode(mode: 'week' | 'day') {
+    if (this.viewMode() === mode || this.loading()) return;
+    this.viewMode.set(mode);
+    if (mode === 'day') {
+      await this.loadDay(this.viewDate());
+    } else {
+      await this.loadWeek(this.weekSunday());
+    }
+  }
+
+  // ── week navigation ───────────────────────────────────────────────────────────
+  async loadWeek(sunday: Date) {
     this.loading.set(true);
     try {
       this.weekData.set(await this.useCase.getWeeklyStats(sunday));
@@ -132,7 +174,7 @@ export class WaiterReportComponent implements OnInit {
     const d = new Date(this.weekSunday());
     d.setDate(d.getDate() - 7);
     this.weekSunday.set(d);
-    await this.loadData(d);
+    await this.loadWeek(d);
   }
 
   async nextWeek() {
@@ -140,15 +182,48 @@ export class WaiterReportComponent implements OnInit {
     const d = new Date(this.weekSunday());
     d.setDate(d.getDate() + 7);
     this.weekSunday.set(d);
-    await this.loadData(d);
+    await this.loadWeek(d);
   }
 
   async goToCurrentWeek() {
     const sun = getSundayOfWeek(new Date());
     this.weekSunday.set(sun);
-    await this.loadData(sun);
+    await this.loadWeek(sun);
   }
 
+  // ── day navigation ────────────────────────────────────────────────────────────
+  async loadDay(date: Date) {
+    this.loading.set(true);
+    try {
+      this.dayData.set(await this.useCase.getDailyStats(date));
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
+  async prevDay() {
+    if (this.loading()) return;
+    const d = new Date(this.viewDate());
+    d.setDate(d.getDate() - 1);
+    this.viewDate.set(d);
+    await this.loadDay(d);
+  }
+
+  async nextDay() {
+    if (this.isToday() || this.loading()) return;
+    const d = new Date(this.viewDate());
+    d.setDate(d.getDate() + 1);
+    this.viewDate.set(d);
+    await this.loadDay(d);
+  }
+
+  async goToToday() {
+    const t = today();
+    this.viewDate.set(t);
+    await this.loadDay(t);
+  }
+
+  // ── helpers ───────────────────────────────────────────────────────────────────
   initials(name: string): string {
     return name
       .split(' ')
