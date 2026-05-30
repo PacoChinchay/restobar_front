@@ -23,12 +23,32 @@
         <h2 class="panel-title">Buenas, ¿quién entra?</h2>
         <p class="panel-sub">Elegí tu cuenta para continuar.</p>
 
-        <select class="user-select" (change)="selectUserById($event)">
-          <option value="">Seleccionar usuario…</option>
-          @for (user of users(); track user.id) {
-            <option [value]="user.id">{{ user.name }} · {{ roleLabel(user.role) }}</option>
-          }
-        </select>
+        <p-select
+          [ngModel]="selectedUser()"
+          (ngModelChange)="selectedUser.set($event)"
+          [options]="users()"
+          placeholder="Seleccionar usuario…"
+          class="user-select-dropdown"
+          appendTo="body">
+          <ng-template #selectedItem let-user>
+            <div class="user-option">
+              <div class="user-option-avatar">{{ user.initials }}</div>
+              <div class="user-option-info">
+                <span class="user-option-name">{{ user.name }}</span>
+                <span class="user-option-role">{{ roleLabel(user.role) }}</span>
+              </div>
+            </div>
+          </ng-template>
+          <ng-template #item let-user>
+            <div class="user-option">
+              <div class="user-option-avatar">{{ user.initials }}</div>
+              <div class="user-option-info">
+                <span class="user-option-name">{{ user.name }}</span>
+                <span class="user-option-role">{{ roleLabel(user.role) }}</span>
+              </div>
+            </div>
+          </ng-template>
+        </p-select>
 
         <button
           class="btn-primary btn-full btn-mt"

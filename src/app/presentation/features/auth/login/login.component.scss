@@ -140,27 +140,59 @@
   @media (max-width: 480px) { margin-bottom: 14px; }
 }
 
-/* ── User select ─────────────────────────────────────────────────────────────── */
-.user-select {
+/* ── User select (p-select) ──────────────────────────────────────────────────── */
+.user-select-dropdown {
   width: 100%;
-  height: var(--tap);
-  padding: 0 14px;
-  border-radius: var(--r-md);
-  border: 1.5px solid var(--border-strong);
-  background: var(--surface);
-  font-size: var(--fs-md);
-  font-family: var(--font-sans);
-  color: var(--ink);
-  cursor: pointer;
-  appearance: auto;
   margin-bottom: 16px;
-  transition: border-color var(--t-fast), box-shadow var(--t-fast);
+}
 
-  &:focus {
-    outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 4px var(--accent-soft);
-  }
+/* PrimeNG renderiza el label como display:block; lo convertimos en flex para centrar verticalmente */
+::ng-deep .user-select-dropdown .p-select-label {
+  display: flex !important;
+  align-items: center;
+}
+
+.user-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-option-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.user-option-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  line-height: 1.2;
+  min-width: 0;
+}
+
+.user-option-name {
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-option-role {
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  text-transform: capitalize;
 }
 
 .btn-mt { margin-top: 0; }

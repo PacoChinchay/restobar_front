@@ -1,5 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Select } from 'primeng/select';
 import { User } from '../../../../core/domain/models/user.model';
 import { AuthPort } from '../../../../core/domain/ports/auth.port';
 import { AuthenticateUserUseCase } from '../../../../core/application/use-cases/authenticate-user.use-case';
@@ -8,7 +10,7 @@ import { AuthStore } from '../../../../core/application/auth.store';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [],
+  imports: [FormsModule, Select],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
@@ -30,16 +32,6 @@ export class LoginComponent implements OnInit {
 
   async ngOnInit() {
     this.users.set(await this.authPort.getUsers());
-  }
-
-  selectUser(user: User) {
-    this.selectedUser.set(user);
-  }
-
-  selectUserById(event: Event) {
-    const id = (event.target as HTMLSelectElement).value;
-    const user = this.users().find(u => u.id === id) ?? null;
-    this.selectedUser.set(user);
   }
 
   goToPin() {
