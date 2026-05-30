@@ -83,7 +83,7 @@
               <strong>S/ {{ cartTotal() | number:'1.2-2' }}</strong>
             }
           </span>
-          <i class="pi" [class.pi-chevron-up]="cartOpen()" [class.pi-chevron-down]="!cartOpen()"></i>
+          <i class="pi" [class.pi-chevron-up]="!cartOpen()" [class.pi-chevron-down]="cartOpen()"></i>
         </div>
 
         <!-- Table selector -->
