@@ -27,7 +27,7 @@ export class MockSaleRepository extends SaleRepositoryPort {
 
   async getDailySummary(date: Date): Promise<DailySummary> {
     const sales = await this.getByDate(date);
-    const byPaymentMethod: Record<PaymentMethod, number> = { efectivo: 0, yape: 0, plin: 0 };
+    const byPaymentMethod: Record<PaymentMethod, number> = { efectivo: 0, yape: 0, plin: 0, transferencia: 0 };
     for (const s of sales) byPaymentMethod[s.paymentMethod] += s.total;
     return {
       totalAmount: sales.reduce((sum, s) => sum + s.total, 0),

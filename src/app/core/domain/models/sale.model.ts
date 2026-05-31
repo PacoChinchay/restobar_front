@@ -1,4 +1,4 @@
-export type PaymentMethod = 'efectivo' | 'yape' | 'plin';
+export type PaymentMethod = 'efectivo' | 'yape' | 'plin' | 'transferencia';
 
 export interface Sale {
   id: number;

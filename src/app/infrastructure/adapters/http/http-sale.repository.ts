@@ -49,9 +49,10 @@ export class HttpSaleRepository extends SaleRepositoryPort {
       totalAmount: dto.totalAmount,
       totalSales: dto.totalSales,
       byPaymentMethod: {
-        efectivo: dto.byPaymentMethod?.efectivo ?? 0,
-        yape:     dto.byPaymentMethod?.yape     ?? 0,
-        plin:     dto.byPaymentMethod?.plin     ?? 0,
+        efectivo:      dto.byPaymentMethod?.efectivo      ?? 0,
+        yape:          dto.byPaymentMethod?.yape          ?? 0,
+        plin:          dto.byPaymentMethod?.plin          ?? 0,
+        transferencia: dto.byPaymentMethod?.transferencia ?? 0,
       },
       recentSales: (dto.recentSales ?? []).map(mapSale),
     };

@@ -112,29 +112,72 @@
               <strong>S/ {{ order.totalAmount | number:'1.2-2' }}</strong>
             </div>
 
-            <div class="pay-method-label">Método de pago</div>
-            <div class="pay-methods">
-              <button
-                class="method-btn"
-                [class.active]="selectedPayment() === 'efectivo'"
-                (click)="selectPayment('efectivo')">
-                <i class="pi pi-money-bill"></i>
-                Efectivo
+            <!-- Payment entries -->
+            <div class="pay-entries">
+              @for (entry of payEntries(); track $index; let i = $index) {
+                <div class="pay-entry">
+                  <select
+                    class="method-select"
+                    [value]="entry.method"
+                    (change)="setEntryMethod(i, $any($event.target).value)">
+                    @for (m of ALL_METHODS; track m) {
+                      <option [value]="m">{{ PAYMENT_LABELS[m] }}</option>
+                    }
+                  </select>
+                  <div class="amount-wrap">
+                    <span class="amount-prefix">S/</span>
+                    <input
+                      class="amount-input"
+                      type="number"
+                      min="0"
+                      step="0.10"
+                      placeholder="0.00"
+                      [value]="entry.amount || ''"
+                      (change)="setEntryAmount(i, $any($event.target).value)" />
+                    @if (remaining() > 0) {
+                      <button
+                        class="fill-btn"
+                        title="Completar con el restante"
+                        (click)="fillRemaining(i)">
+                        <i class="pi pi-plus-circle"></i>
+                      </button>
+                    }
+                  </div>
+                  @if (payEntries().length > 1) {
+                    <button class="remove-entry-btn" (click)="removePayEntry(i)">
+                      <i class="pi pi-times"></i>
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- Add method button -->
+            @if (payEntries().length < 4) {
+              <button class="add-entry-btn" (click)="addPayEntry()">
+                <i class="pi pi-plus"></i>
+                Agregar método de pago
               </button>
-              <button
-                class="method-btn yape"
-                [class.active]="selectedPayment() === 'yape'"
-                (click)="selectPayment('yape')">
-                <i class="pi pi-mobile"></i>
-                Yape
-              </button>
-              <button
-                class="method-btn plin"
-                [class.active]="selectedPayment() === 'plin'"
-                (click)="selectPayment('plin')">
-                <i class="pi pi-mobile"></i>
-                Plin
-              </button>
+            }
+
+            <!-- Summary -->
+            <div class="pay-summary">
+              <div class="pay-summary-row">
+                <span>Pagado</span>
+                <strong [class.complete]="remaining() <= 0">S/ {{ totalPaid() | number:'1.2-2' }}</strong>
+              </div>
+              @if (remaining() > 0) {
+                <div class="pay-summary-row danger">
+                  <span>Restante</span>
+                  <strong>S/ {{ remaining() | number:'1.2-2' }}</strong>
+                </div>
+              }
+              @if (change() > 0) {
+                <div class="pay-summary-row ok">
+                  <span>Vuelto</span>
+                  <strong>S/ {{ change() | number:'1.2-2' }}</strong>
+                </div>
+              }
             </div>
 
             <div class="card-actions">
@@ -148,7 +191,7 @@
                 label="Confirmar cobro"
                 icon="pi pi-check"
                 size="small"
-                [disabled]="!selectedPayment()"
+                [disabled]="!canConfirm()"
                 [loading]="paying()"
                 (onClick)="confirmPay()" />
             </div>

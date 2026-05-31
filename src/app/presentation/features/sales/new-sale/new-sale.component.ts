@@ -99,7 +99,7 @@ export class NewSaleComponent implements OnInit {
 
   paymentLabel(method: PaymentMethod | null): string {
     if (!method) return '';
-    const labels: Record<PaymentMethod, string> = { efectivo: 'Efectivo', yape: 'Yape', plin: 'Plin' };
+    const labels: Record<PaymentMethod, string> = { efectivo: 'Efectivo', yape: 'Yape', plin: 'Plin', transferencia: 'Transferencia' };
     return labels[method];
   }
 }

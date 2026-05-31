@@ -9,6 +9,11 @@ export interface OrderItem {
   subtotal: number;
 }
 
+export interface OrderPaymentEntry {
+  method: string;
+  amount: number;
+}
+
 export interface Order {
   id: number;
   tableNumber: number;
@@ -19,6 +24,7 @@ export interface Order {
   paidAt?: Date;
   paymentMethod?: string;
   createdBy?: string;
+  payments: OrderPaymentEntry[];
 }
 
 export interface CreateOrderRequest {
@@ -28,6 +34,6 @@ export interface CreateOrderRequest {
 }
 
 export interface PayOrderRequest {
-  paymentMethod: string;
+  payments: { method: string; amount: number }[];
   registeredBy: string;
 }

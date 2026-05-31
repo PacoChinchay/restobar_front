@@ -34,6 +34,7 @@ export class MockOrderRepository extends OrderRepositoryPort {
       items,
       totalAmount: items.reduce((s, i) => s + i.subtotal, 0),
       createdAt: new Date(),
+      payments: [],
     };
     mockOrders.push(order);
     return Promise.resolve(order);
@@ -72,7 +73,7 @@ export class MockOrderRepository extends OrderRepositoryPort {
     const order = mockOrders.find(o => o.id === orderId)!;
     order.status = 'paid';
     order.paidAt = new Date();
-    order.paymentMethod = _request.paymentMethod;
+    order.paymentMethod = _request.payments?.[0]?.method ?? 'efectivo';
     return Promise.resolve(order);
   }
 

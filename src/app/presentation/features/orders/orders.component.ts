@@ -12,6 +12,18 @@ import { AuthStore } from '../../../core/application/auth.store';
 
 type OrderTab = 'mine' | 'all';
 
+interface PayEntry {
+  method: PaymentMethod;
+  amount: number;
+}
+
+const PAYMENT_LABELS: Record<PaymentMethod, string> = {
+  efectivo: 'Efectivo',
+  yape: 'Yape',
+  plin: 'Plin',
+  transferencia: 'Transferencia',
+};
+
 @Component({
   selector: 'app-orders',
   standalone: true,
@@ -28,11 +40,14 @@ export class OrdersComponent implements OnInit {
   private confirmationService = inject(ConfirmationService);
   private router = inject(Router);
 
+  readonly ALL_METHODS: PaymentMethod[] = ['efectivo', 'yape', 'plin', 'transferencia'];
+  readonly PAYMENT_LABELS = PAYMENT_LABELS;
+
   readonly orders = signal<Order[]>([]);
   readonly loading = signal(false);
   readonly activeTab = signal<OrderTab>('mine');
   readonly payingOrderId = signal<number | null>(null);
-  readonly selectedPayment = signal<PaymentMethod | null>(null);
+  readonly payEntries = signal<PayEntry[]>([{ method: 'efectivo', amount: 0 }]);
   readonly paying = signal(false);
 
   readonly myOrders = computed(() => {
@@ -47,6 +62,22 @@ export class OrdersComponent implements OnInit {
 
   readonly payingOrder = computed(() =>
     this.orders().find(o => o.id === this.payingOrderId()) ?? null,
+  );
+
+  readonly totalPaid = computed(() =>
+    this.payEntries().reduce((s, e) => s + (e.amount || 0), 0),
+  );
+
+  readonly remaining = computed(() => {
+    const order = this.payingOrder();
+    if (!order) return 0;
+    return Math.round((order.totalAmount - this.totalPaid()) * 100) / 100;
+  });
+
+  readonly change = computed(() => Math.max(0, Math.round(-this.remaining() * 100) / 100));
+
+  readonly canConfirm = computed(() =>
+    this.remaining() <= 0 && this.payEntries().some(e => e.amount > 0),
   );
 
   async ngOnInit() {
@@ -66,31 +97,57 @@ export class OrdersComponent implements OnInit {
     this.router.navigate(['/carta']);
   }
 
-  editOrder(order: Order) {
-    this.router.navigate(['/pos', order.id]);
-  }
-
   startPay(order: Order) {
     this.payingOrderId.set(order.id);
-    this.selectedPayment.set(null);
+    this.payEntries.set([{ method: 'efectivo', amount: 0 }]);
   }
 
   cancelPay() {
     this.payingOrderId.set(null);
-    this.selectedPayment.set(null);
+    this.payEntries.set([]);
   }
 
-  selectPayment(method: PaymentMethod) {
-    this.selectedPayment.set(method);
+  addPayEntry() {
+    const lastMethod = this.payEntries().at(-1)?.method ?? 'efectivo';
+    const next: PaymentMethod = lastMethod === 'efectivo' ? 'yape' : 'efectivo';
+    this.payEntries.update(entries => [...entries, { method: next, amount: 0 }]);
+  }
+
+  removePayEntry(i: number) {
+    this.payEntries.update(entries => entries.filter((_, idx) => idx !== i));
+  }
+
+  setEntryMethod(i: number, method: PaymentMethod) {
+    this.payEntries.update(entries =>
+      entries.map((e, idx) => idx === i ? { ...e, method } : e),
+    );
+  }
+
+  setEntryAmount(i: number, raw: string) {
+    const amount = parseFloat(raw) || 0;
+    this.payEntries.update(entries =>
+      entries.map((e, idx) => idx === i ? { ...e, amount } : e),
+    );
+  }
+
+  fillRemaining(i: number) {
+    const rem = this.remaining();
+    if (rem <= 0) return;
+    const current = this.payEntries()[i]?.amount ?? 0;
+    this.payEntries.update(entries =>
+      entries.map((e, idx) => idx === i ? { ...e, amount: Math.round((current + rem) * 100) / 100 } : e),
+    );
   }
 
   async confirmPay() {
     const order = this.payingOrder();
-    if (!order || !this.selectedPayment() || this.paying()) return;
+    if (!order || this.remaining() > 0.005 || this.paying()) return;
     this.paying.set(true);
     try {
       await this.payOrder.execute(order.id, {
-        paymentMethod: this.selectedPayment()!,
+        payments: this.payEntries()
+          .filter(e => e.amount > 0)
+          .map(e => ({ method: e.method, amount: e.amount })),
         registeredBy: this.authStore.currentUser()?.name ?? 'Desconocido',
       });
       this.messageService.add({
@@ -139,11 +196,5 @@ export class OrdersComponent implements OnInit {
     if (diff < 60) return `${diff} min`;
     const h = Math.floor(diff / 60);
     return `${h}h ${diff % 60}min`;
-  }
-
-  paymentLabel(method: PaymentMethod | null): string {
-    if (!method) return '';
-    const labels: Record<PaymentMethod, string> = { efectivo: 'Efectivo', yape: 'Yape', plin: 'Plin' };
-    return labels[method];
   }
 }

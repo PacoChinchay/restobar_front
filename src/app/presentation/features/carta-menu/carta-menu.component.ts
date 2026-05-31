@@ -209,16 +209,22 @@ export class CartaMenuComponent implements OnInit {
         life: 3000,
       });
       this.router.navigate(['/orders']);
-    } catch {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'No se pudo guardar la comanda.',
-        life: 5000,
-      });
+    } catch (err: unknown) {
+      const { summary, detail } = this.parseOrderError(err);
+      this.messageService.add({ severity: 'error', summary, detail, life: 6000 });
     } finally {
       this.saving.set(false);
     }
+  }
+
+  private parseOrderError(err: unknown): { summary: string; detail: string } {
+    if (err && typeof err === 'object' && 'status' in err) {
+      const http = err as { status: number; error?: { message?: string } };
+      if (http.status === 409 && http.error?.message) {
+        return { summary: 'Stock insuficiente', detail: http.error.message };
+      }
+    }
+    return { summary: 'Error', detail: 'No se pudo guardar la comanda. Intentá de nuevo.' };
   }
 
   increaseTable() { this.tableNumber.update(n => n + 1); }
